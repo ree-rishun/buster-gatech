@@ -179,10 +179,12 @@
 
   // 検索結果一覧
   #list{
+    display: block;
     width: 90%;
     height: auto;
     margin: 5px 0 0 5%;
     overflow-x: hidden;
+    overflow-y: auto;
   }
 
   #list_sumnum{
@@ -243,13 +245,6 @@
 
     .list_description{
       margin-top: 5px;
-
-      p{
-        color: #6a6a6a;
-        font-weight: bold;
-        font-size: 0.7rem;
-        line-height: 0.9rem;
-      }
     }
     .list_params{
       display: inline-block;
@@ -264,6 +259,12 @@
       h3{
         margin-top: 5px;
         font-size: 0.9rem;
+      }
+      p{
+        color: #6a6a6a;
+        font-weight: bold;
+        font-size: 0.7rem;
+        line-height: 0.8rem;
       }
     }
     .list_moneys{
@@ -296,7 +297,7 @@
     }
   }
   .flick_right{
-    background-color: #00ff86;
+    background-color: #00ff6a;
     background-image: url("../assets/img/like.png");
     background-size: auto 40px;
     background-repeat: no-repeat;
