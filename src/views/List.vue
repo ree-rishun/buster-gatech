@@ -12,7 +12,8 @@
         <div
           class="cancel_button"
           @click="cancelButton(room.id)">キャンセル</div>
-        <div class="card">
+        <div class="card"
+             v-touch:swipe="(direction) => flick(direction, room.id)">
           <img class="list_img" :src="room.img">
           <div class="list_params">
             <h3>{{ room.title }}</h3>
@@ -168,6 +169,18 @@
           img: 'https://i.imgur.com/ij76SHc.jpg',
           id: '0006',
           mode: 'nomal'
+        },
+        '0007': {
+          title: 'お部屋７',
+          address: '東京都町田市本町田1-1-2',
+          price: 55000,
+          keymoney: 50000,
+          deposit: 50000,
+          layout: '1L',
+          size: 23,
+          img: 'https://i.imgur.com/ij76SHc.jpg',
+          id: '0007',
+          mode: 'nomal'
         }
       }
       this.searchResultNum = 6
@@ -176,6 +189,9 @@
 </script>
 
 <style lang="scss">
+  *{
+    // outline: 1px solid red;
+  }
 
   // 検索結果一覧
   #list{
@@ -233,10 +249,11 @@
 
     // 値段の表示スタイル
     .list_price{
-      margin-top: 4px;
+      margin-top: 2px;
       font-size: 0.7rem;
       font-weight: bold;
       color: #ff4441;
+      line-height: 0.9rem;
 
       span{
         font-size: 1.2rem;
@@ -259,15 +276,19 @@
       h3{
         margin-top: 5px;
         font-size: 0.9rem;
+        font-weight: bold;
       }
       p{
         color: #6a6a6a;
         font-weight: bold;
         font-size: 0.7rem;
         line-height: 0.8rem;
+        margin: 0;
       }
     }
     .list_moneys{
+      font-size: 0.7rem;
+      line-height: 0.8rem;
       span{
         display: inline-block;
         width: 0.9rem;
