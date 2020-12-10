@@ -135,21 +135,23 @@
 
         // 値のアップデート
         this.updateCategory()
+        this.updateRoom()
       },
       disable (suffix) {
-        console.log(suffix)
         // 有効化一覧から削除
         this.categories.enable.splice(suffix,1)
 
         // 値のアップデート
         this.updateCategory()
+        this.updateRoom()
       },
       updateCategory () { // カテゴリ一覧のアップデート
         let disableCategoryList = {}
 
+        // 抽出処理
         for (let categoryID in this.categories.list) {
           // 有効化リストに入っていないカテゴリのみ抽出
-          if (this.categories.enable.indexOf(this.categories.list[categoryID].id) === -1) {
+          if (this.categories.enable.indexOf(categoryID) === -1) {
             disableCategoryList[categoryID] = this.categories.list[categoryID]
           }
         }
@@ -160,9 +162,15 @@
       updateRoom () { // 部屋一覧のアップデート
         let muchRoomList = {}
 
+        console.log(this.rooms.list)
+
+        // 抽出処理
         for (let roomID in this.rooms.list) {
+          console.log(roomID)
+          console.log('return : ' + this.getIsDuplicate(this.rooms.list[roomID].categories, this.categories.enable))
+          console.log('length : ' + this.categories.enable.length * 2)
           // カテゴリ一覧にヒットするもののみ抽出
-          if (this.getIsDuplicate(this.rooms.list[roomID].categories, this.categories.enable) === this.categories.enable.length) {
+          if (this.getIsDuplicate(this.rooms.list[roomID].categories, this.categories.enable) === this.categories.enable.length * 2) {
             muchRoomList[roomID] = this.rooms.list[roomID]
           }
         }
@@ -188,8 +196,8 @@
 
           if (room !== null) {
             // 新規部屋数を格納
-            self.rooms.list = Object.assign(self.rooms, room)
-            self.rooms.much = Object.assign(self.rooms, room)
+            self.rooms.list = Object.assign(self.rooms.list, room)
+            self.rooms.much = Object.assign(self.rooms.much, room)
 
             // 部屋数の更新
             self.searchResultNum = Object.keys(self.rooms).length
