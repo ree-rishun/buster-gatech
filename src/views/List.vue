@@ -170,7 +170,7 @@
           console.log('return : ' + this.getIsDuplicate(this.rooms.list[roomID].categories, this.categories.enable))
           console.log('length : ' + this.categories.enable.length * 2)
           // カテゴリ一覧にヒットするもののみ抽出
-          if (this.getIsDuplicate(this.rooms.list[roomID].categories, this.categories.enable) === this.categories.enable.length * 2) {
+          if (this.getIsDuplicate(this.rooms.list[roomID].categories, this.categories.enable) === this.getIsDuplicate(this.categories.enable, this.categories.enable)) {
             muchRoomList[roomID] = this.rooms.list[roomID]
           }
         }
