@@ -31,6 +31,7 @@ export default {
 </script>
 
 <style lang="scss">
+  // ロゴ
   h1{
     display: inline-block;
     width: 100%;
@@ -42,11 +43,15 @@ export default {
     user-select: none;
     color: rgba(0,0,0,0);
   }
+
+  // フッタースタイル
   footer{
     width: 100%;
     margin-top: 20px;
     padding-top: 20px;
     background: #d8d8d8;
+
+    // フッターナビゲーション
     ul{
       text-align: center;
       li{
@@ -55,8 +60,9 @@ export default {
         height: 40px;
         font-weight: bold;
 
-        &:link{
-
+        :link, :visited{
+          text-decoration: none;
+          color: #111111;
         }
       }
     }

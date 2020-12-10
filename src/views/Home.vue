@@ -18,6 +18,10 @@
 </template>
 
 <script>
+import firebase from 'firebase/app'
+import 'firebase/auth'
+import 'firebase/storage'
+import 'firebase/database'
 
 export default {
   name: 'Home',
@@ -25,33 +29,19 @@ export default {
   },
   data () {
     return {
-      areas: {
-        1: {
-          name: '東京都渋谷区',
-          id: '1'
-        },
-        2: {
-          name: '東京都新宿区',
-          id: '2'
-        },
-        3: {
-          name: '東京都千代田区',
-          id: '3'
-        },
-        4: {
-          name: '東京都杉並区',
-          id: '4'
-        },
-        5: {
-          name: '東京都墨田区',
-          id: '5'
-        },
-        6: {
-          name: '東京都目黒区',
-          id: '6'
-        }
-      }
+      areas: []
     }
+  },
+  mounted() {
+    const self = this
+    firebase
+      .database()
+      .ref("areas")
+      .on("child_added", snapshot => {
+        const area = snapshot.val()
+        console.log(area)
+        self.areas.push(area)
+      })
   }
 }
 </script>

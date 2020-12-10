@@ -16,7 +16,7 @@
              v-touch:swipe="(direction) => flick(direction, room.id)">
           <img class="list_img" :src="room.img">
           <div class="list_params">
-            <h3>{{ room.title }}</h3>
+            <h3>{{ room.name }}</h3>
             <div class="list_price">
               <span>{{ convTenThousand(room.price) }}</span>万円
             </div>
@@ -35,6 +35,10 @@
 <script>
   import Vue from 'vue'
   import Vue2TouchEvents from 'vue2-touch-events'
+  import firebase from 'firebase/app'
+  import 'firebase/auth'
+  import 'firebase/storage'
+  import 'firebase/database'
 
   Vue.use(Vue2TouchEvents)
 
@@ -97,93 +101,28 @@
       }
     },
     mounted () {
-      this.rooms = {
-        '0001': {
-          title: 'お部屋１',
-          address: '東京都町田市本町田1-1-2',
-          price: 55000,
-          keymoney: 50000,
-          deposit: 50000,
-          layout: '1L',
-          size: 23,
-          id: '0001',
-          img: 'https://i.imgur.com/ij76SHc.jpg',
-          mode: 'nomal'
-        },
-        '0002': {
-          title: "お部屋２",
-          address: "東京都町田市本町田1-1-2",
-          price: 55000,
-          keymoney: 50000,
-          deposit: 50000,
-          layout: '1L',
-          size: 23,
-          img: 'https://i.imgur.com/ij76SHc.jpg',
-          id: '0002',
-          mode: 'nomal'
-        },
-        '0003': {
-          title: "お部屋３",
-          address: "東京都町田市本町田1-1-2",
-          price: 55000,
-          keymoney: 50000,
-          deposit: 50000,
-          layout: '1L',
-          size: 23,
-          img: 'https://i.imgur.com/ij76SHc.jpg',
-          id: '0003',
-          mode: 'nomal'
-        },
-        '0004': {
-          title: "お部屋４",
-          address: "東京都町田市本町田1-1-2",
-          price: 55000,
-          keymoney: 50000,
-          deposit: 50000,
-          layout: '1L',
-          size: 23,
-          img: 'https://i.imgur.com/ij76SHc.jpg',
-          id: '0004',
-          mode: 'nomal'
-        },
-        '0005': {
-          title: "お部屋５",
-          address: "東京都町田市本町田1-1-2",
-          price: 55000,
-          keymoney: 50000,
-          deposit: 50000,
-          layout: '1L',
-          size: 23,
-          img: 'https://i.imgur.com/ij76SHc.jpg',
-          id: '0005',
-          mode: 'nomal'
-        },
-        '0006': {
-          title: "お部屋６",
-          address: "東京都町田市本町田1-1-2",
-          price: 55000,
-          keymoney: 50000,
-          deposit: 50000,
-          layout: '1L',
-          size: 23,
-          img: 'https://i.imgur.com/ij76SHc.jpg',
-          id: '0006',
-          mode: 'nomal'
-        },
-        '0007': {
-          title: 'お部屋７',
-          address: '東京都町田市本町田1-1-2',
-          price: 55000,
-          keymoney: 50000,
-          deposit: 50000,
-          layout: '1L',
-          size: 23,
-          img: 'https://i.imgur.com/ij76SHc.jpg',
-          id: '0007',
-          mode: 'nomal'
-        }
-      }
-      this.searchResultNum = 6
+      const self = this
+
+      // クエリパラメータの取得
+      const searchData = this.$route.query
+
+      console.log('keyWord : ' + searchData.keyWord)
+
+      // 検索結果を取得（前方一致）
+      firebase.database().ref('/rooms')
+        .orderByChild('name').startAt(searchData.keyWord).endAt(searchData.keyWord + '\uf8ff')
+        .once('value',function(snapshot) {
+          const room = snapshot.val()
+
+          console.log(room)
+          if (room !== null) {
+            // 新規部屋数を格納
+            self.rooms = Object.assign(self.rooms, room)
+
+            // 部屋数の更新
+            self.searchResultNum = 6
+          }
+        })
     }
   }
 </script>
