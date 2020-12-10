@@ -2,7 +2,7 @@
   <v-app>
     <h1>yadokari</h1>
     <div id="searchBar">
-      <search/>
+      <Search/>
     </div>
     <router-view></router-view>
     <footer>
@@ -16,13 +16,13 @@
 </template>
 
 <script>
-import search from './components/search'
+import Search from './components/Search'
 
 export default {
   name: 'App',
 
   components: {
-    search
+    Search
   },
   data: () => ({
     //
@@ -30,7 +30,7 @@ export default {
 };
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
   // ロゴ
   h1{
     display: inline-block;

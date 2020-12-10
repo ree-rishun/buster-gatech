@@ -5,7 +5,7 @@
       v-model="keyWord">
     <span
       id="search_button"
-      @click="search">
+      @click="searchPost">
       検索
     </span>
   </div>
@@ -20,7 +20,7 @@
       }
     },
     methods: {
-      search () {
+      searchPost () {
         if (this.keyWord !== '') {
           // 検索結果を表示
           this.$router.push({ name: 'search', query: { keyWord: this.keyWord }})
@@ -31,7 +31,7 @@
 </script>
 
 <style scoped lang="scss">
-  $textbox-height: 30px;
+  $textbox-height: 40px;
 
   #search_bar{
     display: block;
@@ -39,13 +39,13 @@
     height: $textbox-height;
     line-height: $textbox-height;
     padding: 0 0 0 15px;
-    border: solid 2px #111111;
+    border: solid 1.5px #111111;
     border-radius: $textbox-height;
   }
 
   input[type="text"]{
     display: inline-block;
-    width: calc(100% - 35px);
+    width: calc(100% - 45px);
     height: $textbox-height - 4px;
     line-height: $textbox-height - 4px;
     margin: 0;

@@ -4,30 +4,43 @@
       {{ searchResultNum % 10 }} / {{ searchResultNum }} 件を表示
     </div>
     <div id="list">
-      <div
-        v-for="room in rooms"
-        :class="'list_content ' + room.mode"
-        :key="room.id"
-        v-touch:swipe="(direction) => flick(direction, room.id)">
+      <div id="list_wideview">
         <div
-          class="cancel_button"
-          @click="cancelButton(room.id)">キャンセル</div>
-        <div class="card"
-             v-touch:swipe="(direction) => flick(direction, room.id)">
-          <img class="list_img" :src="room.img">
-          <div class="list_params">
-            <h3>{{ room.name }}</h3>
+          v-for="room in rooms"
+          :class="'list_content ' + room.mode"
+          :key="room.id"
+          v-touch:swipe="(direction) => flick(direction, room.id)">
+          <div
+            class="cancel_button"
+            @click="cancelButton(room.id)">キャンセル</div>
+          <div class="card"
+               :style="'background-image: url(\'' + room.img + '\');'"
+               v-touch:swipe="(direction) => flick(direction, room.id)">
+            <div class="list_params">
+              <h3>{{ room.name }}</h3>
+              <div class="list_description">
+                <p class="list_moneys"><span>敷</span> {{ convTenThousand(room.deposit) }}万円 <span>礼</span> {{ convTenThousand(room.keymoney) }}万円</p>
+                <p>{{ room.layout }} / {{ room.size }}m&sup2;</p>
+                <p>{{ room.address }}</p>
+              </div>
+            </div>
             <div class="list_price">
               <span>{{ convTenThousand(room.price) }}</span>万円
-            </div>
-            <div class="list_description">
-              <p class="list_moneys"><span>敷</span> {{ convTenThousand(room.deposit) }}万円 <span>礼</span> {{ convTenThousand(room.keymoney) }}万円</p>
-              <p>{{ room.layout }} / {{ room.size }}m&sup2;</p>
-              <p>{{ room.address }}</p>
             </div>
           </div>
         </div>
       </div>
+    </div>
+
+    <div id="categoryList">
+      <ul>
+        <li
+          v-for="category in categories"
+          :key="category.id"
+        >
+          #{{ category.name }}
+        </li>
+      </ul>
     </div>
   </div>
 </template>
@@ -49,7 +62,8 @@
         rooms: {},
         houko: 'a',
         searchResultNum: 0,
-        flickDelay: 1500
+        flickDelay: 1500,
+        categories: []
       }
     },
     methods: {
@@ -106,8 +120,6 @@
       // クエリパラメータの取得
       const searchData = this.$route.query
 
-      console.log('keyWord : ' + searchData.keyWord)
-
       // 検索結果を取得（前方一致）
       firebase.database().ref('/rooms')
         .orderByChild('name').startAt(searchData.keyWord).endAt(searchData.keyWord + '\uf8ff')
@@ -123,6 +135,16 @@
             self.searchResultNum = Object.keys(self.rooms).length
           }
         })
+
+      // カテゴリ一覧の取得
+      firebase
+        .database()
+        .ref("categories")
+        .on("child_added", snapshot => {
+          const category = snapshot.val()
+          console.log(category)
+          self.categories.push(category)
+        })
     }
   }
 </script>
@@ -132,14 +154,21 @@
     // outline: 1px solid red;
   }
 
+  body{
+    display: block;
+    width: 100vw;
+    height: 100vh;
+    overflow-y: hidden;
+  }
+
   // 検索結果一覧
   #list{
     display: block;
-    width: 90%;
-    height: auto;
-    margin: 5px 0 0 5%;
-    overflow-x: hidden;
-    overflow-y: auto;
+    width: 100%;
+    height: 50vh;
+    margin: 10px 0 0;
+    overflow-x: scroll;
+    overflow-y: hidden;
   }
 
   #list_sumnum{
@@ -149,17 +178,19 @@
     text-align: right;
   }
 
+  #list_wideview{
+    display: inline-block;
+    width: max-content;
+  }
+
   // 部屋ごとのスタイル
   $flick_time: 0.5s;
   .list_content{
-    display: inline-block;
-    width: 100%;
-    height: 100px;
     position: relative;
-    border-bottom: solid 1px #999999;
-    &:first-child{
-      border-top: solid 1px #999999;
-    }
+    display: inline-block;
+    width: 70vw;
+    height: 50vh;
+    margin-left: 5vw;
   }
 
   // 処理キャンセルボタン
@@ -174,13 +205,16 @@
 
   // 詳細カード
   .card{
-    display: block;
+    display: inline-block;
     position: absolute;
     z-index: 100;
     width: 100%;
-    height: auto;
+    height: 100%;
+    border-radius: 30px;
     margin: 0;
-    background: #ffffff;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
     -webkit-transition: all $flick_time ease;
     -moz-transition: all $flick_time ease;
     -o-transition: all $flick_time ease;
@@ -188,6 +222,11 @@
 
     // 値段の表示スタイル
     .list_price{
+      position: absolute;
+      top: 25px;
+      right: 15px;
+      display: inline-block;
+      width: 30%;
       margin-top: 2px;
       font-size: 0.7rem;
       font-weight: bold;
@@ -195,18 +234,23 @@
       line-height: 0.9rem;
 
       span{
-        font-size: 1.2rem;
+        font-size: 2.3rem;
       }
     }
 
     .list_description{
+      display: inline-block;
+      width: 70%;
       margin-top: 5px;
     }
     .list_params{
+      position: absolute;
+      bottom: 20px;
       display: inline-block;
-      width: calc(100% - 110px);
+      width: 100%;
       margin-left: 10px;
       vertical-align: top;
+      text-shadow: 0px 0px 10px #434343;
 
       h3, p{
         text-align: left;
@@ -214,14 +258,16 @@
       }
       h3{
         margin-top: 5px;
-        font-size: 0.9rem;
+        font-size: 1.6rem;
+        line-height: 1.6rem;
         font-weight: bold;
+        color: #ffffff;
       }
       p{
-        color: #6a6a6a;
+        color: #ffffff;
         font-weight: bold;
-        font-size: 0.7rem;
-        line-height: 0.8rem;
+        font-size: 0.8rem;
+        line-height: 1.1rem;
         margin: 0;
       }
     }
@@ -230,11 +276,13 @@
       line-height: 0.8rem;
       span{
         display: inline-block;
-        width: 0.9rem;
-        height: 0.9rem;
-        background-color: #6a6a6a;
+        width: 1.1rem;
+        height: 1.1rem;
+        line-height: 1.1rem;
+        background-color: #ffffff;
         text-align: center;
-        color: #ffffff;
+        color: #6a6a6a;
+        text-shadow: none;
       }
     }
     .list_img{
@@ -243,6 +291,38 @@
       width: 90px;
       object-fit: cover;
       vertical-align: top;
+    }
+  }
+
+  #categoryList{
+    display: block;
+    width: 100%;
+    overflow-x: scroll;
+    overflow-y: hidden;
+    margin:5px 0 10px;
+    ul{
+      display: inline-block;
+      width: max-content;
+    }
+
+    li{
+      display: inline-block;
+      width: auto;
+      height: 30px;
+      line-height: 13px;
+      margin: 10px 5px;
+      padding: 10px 12px;
+      border-radius: 50px;
+      background: #ff4441;
+      font-size: 13px;
+      font-weight: bolder;
+      color: #ffffff;
+      cursor: pointer;
+
+      // ホバーアニメーション（透過）
+      &:hover{
+        opacity: .6;
+      }
     }
   }
 

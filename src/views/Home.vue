@@ -1,19 +1,21 @@
 <template>
   <div class="home">
+    <h2>地域で検索</h2>
+
+    <ul id="areaList">
+      <li
+        v-for="city in areas"
+        :key="city.id"
+      >
+        {{ city.name }}
+      </li>
+    </ul>
+
     <div id="bunnerArea">
       <img
         src="../assets/img/bunner.png"
         class="bunnerImg">
     </div>
-    <h2>地域で検索</h2>
-    <ul id="areaList">
-      <li
-        v-for="city in areas"
-        :key="city.id"
-        >
-        {{ city.name }}
-      </li>
-    </ul>
   </div>
 </template>
 
@@ -29,11 +31,14 @@ export default {
   },
   data () {
     return {
-      areas: []
+      areas: [],
+      categories: []
     }
   },
   mounted() {
     const self = this
+
+    // 地名一覧の取得
     firebase
       .database()
       .ref("areas")
@@ -57,21 +62,25 @@ export default {
     }
   }
   h2{
+    margin-top: 20px;
     text-align: center;
   }
   #areaList{
+    display: block;
+    width: 90%;
     text-align: center;
-    margin:10px 0;
+    margin:5px 0 10px 5%;
     li{
       display: inline-block;
       width: auto;
       height: 30px;
       line-height: 13px;
       margin: 10px 5px;
-      padding: 10px 20px;
+      padding: 10px 12px;
       border-radius: 50px;
       background: #ff4441;
-      font-size: 15px;
+      font-size: 13px;
+      font-weight: bolder;
       color: #ffffff;
       cursor: pointer;
 
