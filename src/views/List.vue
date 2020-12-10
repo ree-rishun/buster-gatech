@@ -1,7 +1,7 @@
 <template>
   <div id="result">
     <div id="list_sumnum">
-      {{ searchResultNum % 10 }} / {{ searchResultNum }} 件を表示
+      {{ searchResultNum }} 件が一致
     </div>
     <div id="list">
       <div id="list_wideview">
@@ -28,6 +28,15 @@
               <span>{{ convTenThousand(room.price) }}</span>万円
             </div>
           </div>
+        </div>
+        <div
+          class="list_notfound"
+          v-if="Object.keys(rooms.much).length === 0">
+          <img src="../assets/img/notfound.png">
+          <p>
+            お探しの条件は<br>
+            見つかりませんでした
+          </p>
         </div>
       </div>
     </div>
@@ -174,9 +183,12 @@
             muchRoomList[roomID] = this.rooms.list[roomID]
           }
         }
+        // 部屋数の更新
+        this.searchResultNum = Object.keys(muchRoomList).length
 
         // 代入
         this.rooms.much = muchRoomList
+
       },
       getIsDuplicate (arr1, arr2) {
         return [...arr1, ...arr2].filter(item => arr1.includes(item) && arr2.includes(item)).length
@@ -200,7 +212,7 @@
             self.rooms.much = Object.assign(self.rooms.much, room)
 
             // 部屋数の更新
-            self.searchResultNum = Object.keys(self.rooms).length
+            self.searchResultNum = Object.keys(self.rooms.much).length
           }
         })
 
@@ -373,6 +385,28 @@
           text-shadow: none;
         }
       }
+    }
+  }
+
+  // 検索結果が見つからなかった場合
+  .list_notfound{
+    display: inline-block;
+    z-index: 100;
+    width: 70vw;
+    height: 50vh;
+    margin-left: 5vw;
+    border-radius: 20px;
+    background: #c4c4c4;
+    box-shadow: 0 7px 10px 3px rgba(0,0,0,0.2);
+    text-align: center;
+
+    img{
+      width: 50%;
+      margin-top: 30px;
+    }
+    p{
+      font-weight: bold;
+      font-size: 1.4rem;
     }
   }
 
