@@ -1,5 +1,5 @@
 <template>
-  <v-app>
+  <v-app style="background: none">
     <h1>yadokari</h1>
     <div id="searchBar">
       <Search/>
@@ -30,7 +30,11 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
+  body{
+    background: #e7e7e7;
+  }
+
   // ロゴ
   h1{
     display: inline-block;

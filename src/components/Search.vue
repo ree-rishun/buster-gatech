@@ -2,6 +2,7 @@
   <div id="search_bar">
     <input
       type="text"
+      placeholder="キーワードで検索"
       v-model="keyWord">
     <span
       id="search_button"
@@ -39,8 +40,9 @@
     height: $textbox-height;
     line-height: $textbox-height;
     padding: 0 0 0 15px;
-    border: solid 1.5px #111111;
+    // border: solid 1.5px #111111;
     border-radius: $textbox-height;
+    background: #ffffff;
   }
 
   input[type="text"]{
