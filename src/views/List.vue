@@ -120,7 +120,7 @@
             self.rooms = Object.assign(self.rooms, room)
 
             // 部屋数の更新
-            self.searchResultNum = 6
+            self.searchResultNum = Object.keys(self.rooms).length
           }
         })
     }

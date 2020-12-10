@@ -1,9 +1,9 @@
 <template>
   <v-app>
     <h1>yadokari</h1>
-    <nav>
+    <div id="searchBar">
       <search/>
-    </nav>
+    </div>
     <router-view></router-view>
     <footer>
       <ul>
@@ -42,6 +42,12 @@ export default {
     background-size: auto 70px;
     user-select: none;
     color: rgba(0,0,0,0);
+  }
+
+  // 検索バー
+  #searchBar{
+    width: 90vw;
+    margin-left: 5vw;
   }
 
   // フッタースタイル
