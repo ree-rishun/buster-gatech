@@ -1,28 +1,42 @@
 <template>
   <div id="result">
     <div id="list_sumnum">
-      {{ imageReadyFlg ? searchResultNum + ' 件が一致' : '検索中...' }}
+      <span
+        id="evaluation_param"
+        v-if="userID !== ''">
+        <span
+          @click="evaluationFilter('like')"
+          class="evaluation_param__like">
+          {{ rooms.like.length }}
+        </span>
+        <span
+          @click="evaluationFilter('nope')"
+          class="evaluation_param__nope">
+          {{ rooms.nope.length }}
+        </span>
+      </span>
+      {{ imageReadyFlg ? (searchResultNum + rooms.like.length + rooms.nope.length) + ' 件が一致' : '検索中...' }}
     </div>
     <div id="list">
       <div
         id="list_wideview"
         v-if="imageReadyFlg">
         <div
-          v-for="room in rooms.much"
-          :class="'list_content ' + room.mode"
-          :key="room.id">
+          v-for="roomID in rooms.much"
+          :class="'list_content ' + rooms.list[roomID].mode"
+          :key="roomID">
           <div class="card"
-               :style="'background-image: url(\'' + rooms.images[room.id] + '\');'">
+               :style="'background-image: url(\'' + rooms.images[roomID] + '\');'">
             <div class="list_params">
-              <h3>{{ room.name }}</h3>
+              <h3>{{ rooms.list[roomID].name }}</h3>
               <div class="list_description">
-                <p class="list_moneys"><span>敷</span> {{ convTenThousand(room.deposit) }}万円 <span>礼</span> {{ convTenThousand(room.keymoney) }}万円</p>
-                <p>{{ room.layout }} / {{ room.size }}m&sup2;</p>
-                <p>{{ room.address }}</p>
+                <p class="list_moneys"><span>敷</span> {{ convTenThousand(rooms.list[roomID].deposit) }}万円 <span>礼</span> {{ convTenThousand(rooms.list[roomID].keymoney) }}万円</p>
+                <p>{{ rooms.list[roomID].layout }} / {{ rooms.list[roomID].size }}m&sup2;</p>
+                <p>{{ rooms.list[roomID].address }}</p>
               </div>
             </div>
             <div class="list_price">
-              <span>{{ convTenThousand(room.price) }}</span>万円
+              <span>{{ convTenThousand(rooms.list[roomID].price) }}</span>万円
             </div>
 
             <div
@@ -40,7 +54,7 @@
         </div>
         <div
           class="list_notfound"
-          v-if="Object.keys(rooms.much).length === 0">
+          v-if="rooms.much.length === 0">
           <img src="../assets/img/notfound.png">
           <p>
             お探しの条件は<br>
@@ -91,7 +105,9 @@
           much: {},
           list: {},
           images: {},
-          disable: []
+          disable: [],
+          like: [],
+          nope: []
         },
         imageReadyFlg: false,
         searchResultNum: 0,
@@ -168,7 +184,7 @@
         this.categories.disable = disableCategoryList
       },
       updateRoom () { // 部屋一覧のアップデート
-        let muchRoomList = {}
+        let muchRoomList = []
 
         // 抽出処理
         for (let roomID in this.rooms.list) {
@@ -179,7 +195,7 @@
 
           // カテゴリ一覧にヒットするもののみ抽出
           if (this.getIsDuplicate(this.rooms.list[roomID].categories, this.categories.enable) === this.getIsDuplicate(this.categories.enable, this.categories.enable)) {
-            muchRoomList[roomID] = this.rooms.list[roomID]
+            muchRoomList.push(roomID)
           }
         }
         // 部屋数の更新
@@ -191,6 +207,22 @@
       },
       getIsDuplicate (arr1, arr2) { // 配列同士の一致するプロパティ数を取得
         return [...arr1, ...arr2].filter(item => arr1.includes(item) && arr2.includes(item)).length
+      },
+      getIsDuplicateValues (arr1, arr2) {
+        return [...arr1, ...arr2].filter((value, index, self) => self.indexOf(value) === index && self.lastIndexOf(value) !== index)
+      },
+      getDuplicateList () {
+        const listArray = Object.keys(this.rooms.list)
+        console.log('listArray :')
+        console.log(listArray)
+        console.log('this.evalution.like :')
+        console.log(this.rooms.like)
+
+        // likeリストへ格納
+        this.rooms.like = this.getIsDuplicateValues(this.rooms.like, listArray)
+
+        // nopeリストへ格納
+        this.rooms.nope = this.getIsDuplicateValues(this.rooms.nope, listArray)
       },
       evaluationAdd (evaluation, roomID) {
         let evaluationBox = ''
@@ -238,6 +270,11 @@
           },
           300
         )
+      },
+      evaluationFilter (evaluation) {
+        if (evaluation === 'like') {
+          this.rooms.much = this.rooms.like
+        }
       }
     },
     mounted () {
@@ -274,16 +311,18 @@
             if (room !== null) {
               // 新規部屋数を格納
               self.rooms.list = Object.assign(self.rooms.list, room)
-              self.rooms.much = Object.assign(self.rooms.much, room)
+              self.rooms.much = Object.keys(room)
 
               // 画像パスを取得
               self.getImages()
+              self.getDuplicateList()
 
               // 部屋数の更新
-              self.searchResultNum = Object.keys(self.rooms.much).length
+              self.searchResultNum = self.rooms.much.length
             } else {
               // 画像パスを取得
               self.getImages()
+              self.getDuplicateList()
             }
           })
       } else if (queryData.mode === 'city') {
@@ -298,16 +337,18 @@
             if (room !== null) {
               // 新規部屋数を格納
               self.rooms.list = Object.assign(self.rooms.list, room)
-              self.rooms.much = Object.assign(self.rooms.much, room)
+              self.rooms.much = Object.keys(room)
 
               // 画像パスを取得
               self.getImages()
+              self.getDuplicateList()
 
               // 部屋数の更新
-              self.searchResultNum = Object.keys(self.rooms.much).length
+              self.searchResultNum = self.rooms.much.length
             } else {
               // 画像パスを取得
               self.getImages()
+              self.getDuplicateList()
             }
           })
       }
@@ -326,22 +367,17 @@
             .on("value", snapshot => {
               const evalution = snapshot.val()
 
-              console.log('users/' + uid + '/evalution')
-
-              console.log('evalution :')
-              console.log(evalution)
-
-
               // リストに格納されている部屋を無効化リストへ格納
               if (evalution.like !== null && evalution.like !== undefined) {
+                // 無効化リストへ格納
                 this.rooms.disable = this.rooms.disable.concat(evalution.like)
+                this.rooms.like = evalution.like
               }
               if (evalution.nope !== null && evalution.nope !== undefined) {
+                // 無効化リストへ格納
                 this.rooms.disable = this.rooms.disable.concat(evalution.nope)
+                this.rooms.nope = evalution.nope
               }
-
-              console.log('this.rooms.disable :')
-              console.log(this.rooms.disable)
 
               // 部屋のリストを更新
               this.updateRoom()
@@ -369,13 +405,50 @@
     overflow-y: hidden;
   }
 
+  // 検索結果数
   #list_sumnum{
     width: 90%;
-    height: auto;
     margin: 0 0 0 5%;
+    position: relative;
     text-align: right;
+    line-height: 40px;
+    height: 40px;
+
+
+    // 評価済み検索結果数
+    #evaluation_param{
+      position: absolute;
+      left: 4px;
+
+      // 共通スタイル
+      span{
+        display: inline-block;
+        background-repeat: no-repeat;
+        color: #ffffff;
+        height: 30px;
+        line-height: 30px;
+        border-radius: 30px;
+        padding: 0 10px 0 35px;
+      }
+      // likeのスタイル
+      .evaluation_param__like{
+        margin-right: 10px;
+        background-size: 18px;
+        background-position: left 10px center;
+        background-image: url("../assets/img/like.png");
+        background-color: #ff4441;
+      }
+      // nopeのスタイル
+      .evaluation_param__nope{
+        background-size: 15px;
+        background-position: left 10px center;
+        background-image: url("../assets/img/nope.png");
+        background-color: #4290ff;
+      }
+    }
   }
 
+  // 表示部分
   #list_wideview{
     display: inline-block;
     width: max-content;
@@ -394,16 +467,6 @@
     -moz-transition: all $flick_time ease;
     -o-transition: all $flick_time ease;
     transition: all  $flick_time ease;
-  }
-
-  // 処理キャンセルボタン
-  .cancel_button{
-    position: absolute;
-    bottom: 16px;
-    width: 100%;
-    text-align: center;
-    color: #ffffff;
-    text-decoration: underline;
   }
 
   // 詳細カード
