@@ -200,7 +200,7 @@ export default {
       background-image: url("../assets/img/searchSmartphone.png");
     }
     .background_much{
-      background-image: url("../assets/img/muching.png");
+      background-image: url("../assets/img/muching_fin.png");
     }
   }
 
