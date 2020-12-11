@@ -4,7 +4,9 @@
       {{ searchResultNum }} 件が一致
     </div>
     <div id="list">
-      <div id="list_wideview">
+      <div
+        id="list_wideview"
+        v-if="imageReadyFlg">
         <div
           v-for="room in rooms.much"
           :class="'list_content ' + room.mode"
@@ -14,7 +16,7 @@
             class="cancel_button"
             @click="cancelButton(room.id)">キャンセル</div>
           <div class="card"
-               :style="'background-image: url(\'' + room.img + '\');'"
+               :style="'background-image: url(\'' + test(rooms.images[room.id]) + '\');'"
                v-touch:swipe="(direction) => flick(direction, room.id)">
             <div class="list_params">
               <h3>{{ room.name }}</h3>
@@ -80,8 +82,10 @@
       return {
         rooms: {
           much: {},
-          list: {}
+          list: {},
+          images: {}
         },
+        imageReadyFlg: false,
         houko: 'a',
         searchResultNum: 0,
         flickDelay: 1500,
@@ -129,6 +133,30 @@
             },
             this.flickDelay
           )
+        }
+      },
+      test (image) {
+        console.log('image :' + image)
+        return image
+      },
+      getImages () {
+        const self = this
+        for(let room in this.rooms.list){
+          // 画像情報の取得
+          const ref = firebase
+            .storage()
+            .ref().
+            child('rooms/' + this.rooms.list[room].id + '/' + this.rooms.list[room].images[0])
+
+          // 画像リンクの取得
+          ref.getDownloadURL().then((url) => {
+            self.rooms.images[self.rooms.list[room].id] = url
+
+            // 全ての画像を読み込んでから表示
+            if (Object.keys(self.rooms.images).length === Object.keys(self.rooms.list).length) {
+              self.imageReadyFlg = true
+            }
+          })
         }
       },
       convTenThousand (price) {
@@ -238,6 +266,9 @@
               self.rooms.list = Object.assign(self.rooms.list, room)
               self.rooms.much = Object.assign(self.rooms.much, room)
 
+              // 画像パスを取得
+              self.getImages()
+
               // 部屋数の更新
               self.searchResultNum = Object.keys(self.rooms.much).length
             }
@@ -255,6 +286,9 @@
               // 新規部屋数を格納
               self.rooms.list = Object.assign(self.rooms.list, room)
               self.rooms.much = Object.assign(self.rooms.much, room)
+
+              // 画像パスを取得
+              self.getImages()
 
               // 部屋数の更新
               self.searchResultNum = Object.keys(self.rooms.much).length
