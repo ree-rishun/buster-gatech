@@ -17,7 +17,10 @@
       <input type="text" v-model="user.address" placeholder="住所（任意）">
     </label>
     <label>
-      <input type="checkbox" v-model="user.term"> 利用規約に同意します。
+      <input type="checkbox" v-model="user.merumaga"> メルマガに登録します。
+    </label>
+    <label>
+      <input type="checkbox" v-model="user.term"> <router-link to="/term">利用規約</router-link>に同意します。
     </label>
 
     <label>
@@ -26,8 +29,6 @@
         送信
       </button>
     </label>
-
-    <div></div>
   </div>
 </template>
 
@@ -42,7 +43,8 @@
           mail: '',
           tel: '',
           address: '',
-          term: false
+          term: false,
+          merumaga: true
         }
       }
     }

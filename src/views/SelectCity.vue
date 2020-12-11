@@ -50,7 +50,7 @@
         })
       }
     },
-    mounted() {
+    mounted () {
       const self = this
 
       // クエリパラメータの取得
@@ -107,7 +107,7 @@
 
       // ホバーアニメーション（透過）
       &:hover{
-        opacity: .6;
+        // opacity: .6;
       }
     }
   }

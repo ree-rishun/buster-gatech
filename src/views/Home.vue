@@ -108,7 +108,7 @@ export default {
 
       // ホバーアニメーション（透過）
       &:hover{
-        opacity: .6;
+        // opacity: .6;
       }
     }
   }

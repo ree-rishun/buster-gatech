@@ -18,8 +18,8 @@
     <footer>
       <ul>
         <li><router-link to="/">ホーム</router-link></li>
-        <li>会員登録</li>
-        <li>利用規約</li>
+        <li><router-link to="/signup">会員登録</router-link></li>
+        <li><router-link to="/term">利用規約</router-link></li>
       </ul>
     </footer>
   </v-app>

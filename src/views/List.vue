@@ -202,6 +202,29 @@
 
       console.log(queryData.prefecturesID + '-' + queryData.cityID)
 
+      // カテゴリ一覧の取得
+      firebase
+        .database()
+        .ref('categories')
+        .once('value').then((snapshot) => {
+        const categories = snapshot.val()
+
+
+        console.log('category :')
+        console.log(categories)
+
+        for (let category in categories) {
+          console.log(categories[category])
+          if (category !== undefined) {
+            // 値の追加
+            self.categories.list[category] = categories[category]
+            self.categories.disable[category] = categories[category]
+          }
+        }
+        console.log('disable :')
+        console.log(self.categories.disable)
+      })
+
       // 検索条件分岐
       if (queryData.mode === 'search') {
         // 検索結果を取得（前方一致）
@@ -238,22 +261,6 @@
             }
           })
       }
-
-
-      // カテゴリ一覧の取得
-      firebase
-        .database()
-        .ref("categories")
-        .on("child_added", snapshot => {
-          const category = snapshot.val()
-
-          // 値の追加
-          self.categories.list[category.id] = category
-          self.categories.disable[category.id] = category
-
-
-          console.log(self.categories.disable)
-        })
     }
   }
 </script>
