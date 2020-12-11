@@ -1,7 +1,7 @@
 <template>
   <div id="result">
     <div id="list_sumnum">
-      {{ searchResultNum }} 件が一致
+      {{ imageReadyFlg ? searchResultNum + ' 件が一致' : '検索中...' }}
     </div>
     <div id="list">
       <div
@@ -10,14 +10,9 @@
         <div
           v-for="room in rooms.much"
           :class="'list_content ' + room.mode"
-          :key="room.id"
-          v-touch:swipe="(direction) => flick(direction, room.id)">
-          <div
-            class="cancel_button"
-            @click="cancelButton(room.id)">キャンセル</div>
+          :key="room.id">
           <div class="card"
-               :style="'background-image: url(\'' + test(rooms.images[room.id]) + '\');'"
-               v-touch:swipe="(direction) => flick(direction, room.id)">
+               :style="'background-image: url(\'' + rooms.images[room.id] + '\');'">
             <div class="list_params">
               <h3>{{ room.name }}</h3>
               <div class="list_description">
@@ -28,6 +23,18 @@
             </div>
             <div class="list_price">
               <span>{{ convTenThousand(room.price) }}</span>万円
+            </div>
+
+            <div
+              class="evaluation_button"
+              v-if="userID !== ''">
+              <span
+                class="evaluation_button__like"
+                @click="evaluationAdd('like', room.id)">
+              </span><span
+              class="evaluation_button__nope"
+              @click="evaluationAdd('nope', room.id)">
+            </span>
             </div>
           </div>
         </div>
@@ -83,64 +90,31 @@
         rooms: {
           much: {},
           list: {},
-          images: {}
+          images: {},
+          disable: []
         },
         imageReadyFlg: false,
-        houko: 'a',
         searchResultNum: 0,
         flickDelay: 1500,
         categories: {
           enable: [],
           disable: {},
           list: {}
-        }
+        },
+        userID: ''
       }
     },
     methods: {
-      flick (direction, roomID) {
-
-        // 右フリックの場合
-        if (direction === 'right') {
-          // 削除
-          this.rooms.much[roomID].mode = 'flick_right'
-
-          // ここにマッチ物件に追加する処理を追加
-
-          // 削除処理
-          const self = this
-          this.rooms.much[roomID].setTimeoutID = setTimeout(
-            function () {
-              // 削除
-              delete self.rooms.much[roomID]
-              self.searchResultNum--
-            },
-            this.flickDelay
-          )
-        }
-
-        // 左フリックの場合
-        if (direction === 'left') {
-          this.rooms.much[roomID].mode = 'flick_left'
-
-          // ここにマッチしない物件に追加する処理を追加
-
-          // 削除処理
-          const self = this
-          this.rooms.much[roomID].setTimeoutID = setTimeout(
-            function () {
-              delete self.rooms.much[roomID]
-              self.searchResultNum--
-            },
-            this.flickDelay
-          )
-        }
-      },
-      test (image) {
-        console.log('image :' + image)
-        return image
-      },
-      getImages () {
+      getImages () { // storageからの画像取得
         const self = this
+
+        // 配列が空の場合は表示して返す
+        if (Object.keys(this.rooms.list).length === 0) {
+          this.imageReadyFlg = true
+          return
+        }
+
+        // 部屋の一覧を取得
         for(let room in this.rooms.list){
           // 画像情報の取得
           const ref = firebase
@@ -152,19 +126,16 @@
           ref.getDownloadURL().then((url) => {
             self.rooms.images[self.rooms.list[room].id] = url
 
-            // 全ての画像を読み込んでから表示
+            // 全ての画像を読み込んでから部屋の一覧を表示
             if (Object.keys(self.rooms.images).length === Object.keys(self.rooms.list).length) {
+              self.updateRoom()
               self.imageReadyFlg = true
             }
           })
         }
       },
-      convTenThousand (price) {
+      convTenThousand (price) { // 1万円で割り、小数点以下1桁を表記
         return (price / 10000).toFixed(1)
-      },
-      cancelButton (roomID) {
-        clearTimeout(this.rooms.much[roomID].setTimeoutID)
-        this.rooms.much[roomID].mode = 'nomal'
       },
       enable (categoryID) {
         // 有効化一覧へ追加
@@ -199,13 +170,13 @@
       updateRoom () { // 部屋一覧のアップデート
         let muchRoomList = {}
 
-        console.log(this.rooms.list)
-
         // 抽出処理
         for (let roomID in this.rooms.list) {
-          console.log(roomID)
-          console.log('return : ' + this.getIsDuplicate(this.rooms.list[roomID].categories, this.categories.enable))
-          console.log('length : ' + this.categories.enable.length * 2)
+          // 無効化リストに存在する場合は飛ばす
+          if (this.rooms.disable.indexOf(roomID) > -1) {
+            continue
+          }
+
           // カテゴリ一覧にヒットするもののみ抽出
           if (this.getIsDuplicate(this.rooms.list[roomID].categories, this.categories.enable) === this.getIsDuplicate(this.categories.enable, this.categories.enable)) {
             muchRoomList[roomID] = this.rooms.list[roomID]
@@ -218,8 +189,55 @@
         this.rooms.much = muchRoomList
 
       },
-      getIsDuplicate (arr1, arr2) {
+      getIsDuplicate (arr1, arr2) { // 配列同士の一致するプロパティ数を取得
         return [...arr1, ...arr2].filter(item => arr1.includes(item) && arr2.includes(item)).length
+      },
+      evaluationAdd (evaluation, roomID) {
+        let evaluationBox = ''
+
+        // 値を正式な値へ変換（現状は変化なしだけど…）
+        if (evaluation === 'like') {
+          evaluationBox = 'like'
+        } else if(evaluation === 'nope') {
+          evaluationBox = 'nope'
+        }
+
+        // 現状の評価値を取得して更新
+        firebase
+          .database()
+          .ref('users/' + this.userID + '/evalution/' + evaluationBox)
+          .once('value').then((snapshot) => {
+          // 値を格納
+          let evalutionArray = snapshot.val()
+
+          // 空の場合・存在しない場合は空の配列を格納
+          if (evalutionArray === null) {
+            evalutionArray = []
+          }
+
+          // 配列への新規値の追加（同じ値が存在しない場合のみ）
+          if (evalutionArray.indexOf(roomID) === -1) {
+            evalutionArray.push(roomID)
+          }
+
+          // 更新後の配列をDBへ格納
+          firebase
+            .database()
+            .ref('users/' + this.userID + '/evalution/' + evaluationBox)
+            .set(evalutionArray)
+        })
+
+        // 検索結果から省く
+        this.rooms.disable.push(roomID)
+
+        // 検索結果を更新
+        const self = this
+        setTimeout(
+          function () {
+            self.updateRoom()
+          },
+          300
+        )
       }
     },
     mounted () {
@@ -228,18 +246,12 @@
       // クエリパラメータの取得
       const queryData = this.$route.query
 
-      console.log(queryData.prefecturesID + '-' + queryData.cityID)
-
       // カテゴリ一覧の取得
       firebase
         .database()
         .ref('categories')
         .once('value').then((snapshot) => {
         const categories = snapshot.val()
-
-
-        console.log('category :')
-        console.log(categories)
 
         for (let category in categories) {
           console.log(categories[category])
@@ -249,8 +261,6 @@
             self.categories.disable[category] = categories[category]
           }
         }
-        console.log('disable :')
-        console.log(self.categories.disable)
       })
 
       // 検索条件分岐
@@ -271,6 +281,9 @@
 
               // 部屋数の更新
               self.searchResultNum = Object.keys(self.rooms.much).length
+            } else {
+              // 画像パスを取得
+              self.getImages()
             }
           })
       } else if (queryData.mode === 'city') {
@@ -292,9 +305,51 @@
 
               // 部屋数の更新
               self.searchResultNum = Object.keys(self.rooms.much).length
+            } else {
+              // 画像パスを取得
+              self.getImages()
             }
           })
       }
+
+      // ログインユーザ情報の取得
+      firebase.auth().onAuthStateChanged((auth) => {
+        if (auth) {
+          // ユーザIDを取得
+          const uid = auth.uid
+          this.userID = uid
+
+          // ユーザの評価情報を取得
+          firebase
+            .database()
+            .ref('users/' + uid + '/evalution')
+            .on("value", snapshot => {
+              const evalution = snapshot.val()
+
+              console.log('users/' + uid + '/evalution')
+
+              console.log('evalution :')
+              console.log(evalution)
+
+
+              // リストに格納されている部屋を無効化リストへ格納
+              if (evalution.like !== null && evalution.like !== undefined) {
+                this.rooms.disable = this.rooms.disable.concat(evalution.like)
+              }
+              if (evalution.nope !== null && evalution.nope !== undefined) {
+                this.rooms.disable = this.rooms.disable.concat(evalution.nope)
+              }
+
+              console.log('this.rooms.disable :')
+              console.log(this.rooms.disable)
+
+              // 部屋のリストを更新
+              this.updateRoom()
+            })
+        } else {
+          this.userID = ''
+        }
+      })
     }
   }
 </script>
@@ -324,7 +379,7 @@
   #list_wideview{
     display: inline-block;
     width: max-content;
-    padding: 5px 0 25px;
+    padding: 5px 15px 25px;
   }
 
   // 部屋ごとのスタイル
@@ -334,7 +389,11 @@
     display: inline-block;
     width: 70vw;
     height: 50vh;
-    margin-left: 5vw;
+    margin: 0 5vw;
+    -webkit-transition: all $flick_time ease;
+    -moz-transition: all $flick_time ease;
+    -o-transition: all $flick_time ease;
+    transition: all  $flick_time ease;
   }
 
   // 処理キャンセルボタン
@@ -361,11 +420,6 @@
     background-position: center;
     box-shadow: 0 7px 10px 3px rgba(0,0,0,0.2);
 
-    -webkit-transition: all $flick_time ease;
-    -moz-transition: all $flick_time ease;
-    -o-transition: all $flick_time ease;
-    transition: all  $flick_time ease;
-
     // 値段の表示スタイル
     .list_price{
       position: absolute;
@@ -380,8 +434,8 @@
       font-size: 0.7rem;
       font-weight: bold;
       text-align: right;
-      color: #fcdc4a;
-      background: #111111;
+      color: #353535;
+      background: #fcdc4a;
 
       span{
         font-size: 2.3rem;
@@ -444,6 +498,49 @@
         }
       }
     }
+
+    // 評価ボタン
+    .evaluation_button{
+      position: absolute;
+      bottom: -10px;
+      right: -20px;
+      width: 100px;
+      height: 50px;
+      background: rgba(0,0,0,.9);
+      border-radius: 5px;
+      box-shadow: 0 7px 7px 3px rgba(0,0,0,0.2);
+      overflow: hidden;
+
+      $evaluation-delay: .3s;
+      span{
+        display: inline-block;
+        width: 50%;
+        height: 100%;
+        background-repeat: no-repeat;
+        background-position: center;
+        -webkit-transition: all $evaluation-delay ease;
+        -moz-transition: all $evaluation-delay ease;
+        -o-transition: all $evaluation-delay ease;
+        transition: all  $evaluation-delay ease;
+      }
+      .evaluation_button__like{
+        background-size: auto 30px;
+        background-image: url("../assets/img/like.png");
+        border-right: solid 0.3px #888888;
+
+        &:hover{
+          background-color: #ff4441;
+        }
+      }
+      .evaluation_button__nope{
+        background-size: auto 20px;
+        background-image: url("../assets/img/nope.png");
+
+        &:hover{
+          background-color: #0070ff;
+        }
+      }
+    }
   }
 
   // 検索結果が見つからなかった場合
@@ -465,7 +562,7 @@
     }
     p{
       position: absolute;
-      bottom: 20px;
+      bottom: 15px;
       width: 100%;
       font-weight: bold;
       font-size: 1.3rem;
@@ -495,11 +592,6 @@
       font-size: 13px;
       font-weight: bolder;
       cursor: pointer;
-
-      // ホバーアニメーション（透過）
-      &:hover{
-        // opacity: .6;
-      }
     }
     .category_enable{
       color: #111111;
@@ -508,27 +600,6 @@
     .category_disable{
       color: #111111;
       background: #cccccc;
-    }
-  }
-
-  .flick_left{
-    background-color: #ff4441;
-    background-image: url("../assets/img/nope.png");
-    background-size: auto 40px;
-    background-repeat: no-repeat;
-    background-position: center;
-    .card{
-      transform: translateX(-100%);
-    }
-  }
-  .flick_right{
-    background-color: #00ff6a;
-    background-image: url("../assets/img/like.png");
-    background-size: auto 40px;
-    background-repeat: no-repeat;
-    background-position: center;
-    .card{
-      transform: translateX(100%);
     }
   }
 </style>

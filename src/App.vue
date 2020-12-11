@@ -68,7 +68,7 @@ export default {
       console.log(user)
       if (user) {
         console.log('if')
-        const uid = user.uid;
+        const uid = user.uid
         this.userID = uid
       } else {
         console.log('else')

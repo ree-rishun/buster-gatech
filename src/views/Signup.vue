@@ -89,7 +89,11 @@
                 tel: this.user.tel,
                 address: this.user.address,
                 merumaga: this.user.merumaga,
-                UID: user.user.uid
+                UID: user.user.uid,
+                evalution: {
+                  like: [],
+                  nope: []
+                }
               })
 
             // ログイン
