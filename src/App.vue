@@ -4,8 +4,15 @@
       <h1 @click="$router.push('/')">yadokari</h1>
       <span
         id="user_icon"
+        v-if="userID !== ''"
         @click="$router.push('/signup')"
         title="ユーザ登録">
+      </span>
+      <span
+        id="user_icon__active"
+        v-else
+        @click="$router.push('/signup')"
+        title="マイページ">
       </span>
     </nav>
     <div id="searchBar">
@@ -21,12 +28,19 @@
         <li><router-link to="/signup">会員登録</router-link></li>
         <li><router-link to="/term">利用規約</router-link></li>
       </ul>
+      <p>
+        &copy;2020 yadkari
+      </p>
     </footer>
   </v-app>
 </template>
 
 <script>
 import Search from './components/Search'
+import firebase from 'firebase/app'
+import 'firebase/auth'
+import 'firebase/storage'
+import 'firebase/database'
 
 export default {
   name: 'App',
@@ -35,8 +49,21 @@ export default {
     Search
   },
   data: () => ({
-    //
+    userID: ''
   }),
+  updated() {
+    const self = this
+    firebase.auth().onAuthStateChanged((user) => {
+      if (user) {
+        const uid = user.uid;
+        console.log(uid)
+        self.userID = uid
+      } else {
+        // User is signed out
+        // ...
+      }
+    });
+  }
 };
 </script>
 
@@ -69,7 +96,7 @@ export default {
   }
 
   // アイコン
-  #user_icon{
+  #user_icon, #user_icon__active{
     position: absolute;
     display: inline-block;
     top: 10px;
@@ -85,6 +112,9 @@ export default {
     background-size: auto 40px;
     vertical-align: top;
   }
+  #user_icon__active{
+    background-image: url("assets/img/user_active.png");
+  }
 
   // 検索バー
   #searchBar{
@@ -92,6 +122,7 @@ export default {
     margin: 15px 0 10px 5vw;
   }
 
+  // フッター上の画像
   .footer_design{
     width: 60%;
     margin: 10px 20% 0;
@@ -117,6 +148,11 @@ export default {
           color: #111111;
         }
       }
+    }
+
+    // コピーライト
+    p{
+      text-align: center;
     }
   }
 </style>

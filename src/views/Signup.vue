@@ -1,6 +1,7 @@
 <template>
   <div>
     <h2>ユーザ登録</h2>
+
     <label>
       <input type="text" v-model="user.lastName" placeholder="苗字">
     </label>
@@ -8,7 +9,10 @@
       <input type="text" v-model="user.firstName" placeholder="名前">
     </label>
     <label>
-      <input type="email" v-model="user.mail" placeholder="メールアドレス">
+      <input type="email" v-model="user.email" placeholder="メールアドレス">
+    </label>
+    <label>
+      <input type="password" v-model="user.password" placeholder="パスワード">
     </label>
     <label>
       <input type="tel" v-model="user.tel" placeholder="電話番号（任意）">
@@ -25,14 +29,27 @@
 
     <label>
       <button
-        class="submit">
-        送信
+        class="submit"
+        @click="registerSubmit">
+        登録
       </button>
+    </label>
+
+    <label>
+      <router-link
+        to="/signin">
+        既に登録されている方はこちら
+      </router-link>
     </label>
   </div>
 </template>
 
 <script>
+  import firebase from 'firebase/app'
+  import 'firebase/auth'
+  import 'firebase/storage'
+  import 'firebase/database'
+
   export default {
     name: "Signup",
     data(){
@@ -40,12 +57,48 @@
         user: {
           firstName: '',
           lastName: '',
-          mail: '',
+          email: '',
+          password: '',
           tel: '',
           address: '',
           term: false,
           merumaga: true
         }
+      }
+    },
+    methods: {
+      registerSubmit () { // 会員登録処理
+
+        // パスワードが6文字以上か？
+        // e-mailのフォーマット確認
+
+        // Authenticationへの登録
+        firebase.auth().createUserWithEmailAndPassword(this.user.email, this.user.password)
+          .then((user) => {
+            console.log('登録成功！')
+            console.log(user)
+            console.log(user.user.uid)
+
+            // 新規ユーザ作成
+            firebase
+              .database()
+              .ref('users/' + user.user.uid)
+              .set({
+                firstName: this.user.firstName,
+                lastName: this.user.lastName,
+                mail: this.user.email,
+                tel: this.user.tel,
+                address: this.user.address,
+                merumaga: this.user.merumaga,
+                UID: user.user.uid
+              })
+          })
+          .catch((error) => {
+            const errorCode = error.code
+            const errorMessage = error.message
+            console.log('ERROR CODE : ' + errorCode)
+            console.log(errorMessage)
+          })
       }
     }
   }
@@ -61,12 +114,18 @@
     text-align: center;
     padding: 10px 0;
 
-    input[type='text'], input[type='tel'], input[type='email']{
+    input[type='text'], input[type='tel'], input[type='email'], input[type='password']{
       display: inline-block;
       height: 30px;
       line-height: 30px;
       width: 270px;
       border-bottom: solid 1px #111111;
+
+      &:focus{
+        outline: none;
+        border: none;
+        border-bottom: solid 1px #0080ff;
+      }
     }
   }
 

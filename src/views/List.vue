@@ -346,8 +346,8 @@
       font-size: 0.7rem;
       font-weight: bold;
       text-align: right;
-      color: #353535;
-      background: #fcdc4a;
+      color: #fcdc4a;
+      background: #111111;
 
       span{
         font-size: 2.3rem;
