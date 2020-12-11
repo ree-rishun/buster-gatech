@@ -24,7 +24,13 @@
       searchPost () {
         if (this.keyWord !== '') {
           // 検索結果を表示
-          this.$router.push({ name: 'search', query: { keyWord: this.keyWord }})
+          this.$router.push({
+            name: 'search',
+            query: {
+              mode: 'search',
+              keyWord: this.keyWord
+            }
+          })
         }
       }
     }

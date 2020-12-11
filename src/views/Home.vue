@@ -1,13 +1,14 @@
 <template>
   <div class="home">
-    <h2>地域で検索</h2>
+    <h2>地域を選択してください</h2>
 
     <ul id="areaList">
       <li
-        v-for="city in areas"
-        :key="city.id"
+        v-for="prefectures in areas"
+        :key="prefectures.id"
+        @click="jampSelectCity(prefectures.id)"
       >
-        {{ city.name }}
+        {{ prefectures.name }}
       </li>
     </ul>
 
@@ -35,13 +36,24 @@ export default {
       categories: []
     }
   },
+  methods: {
+    jampSelectCity (prefecturesID) {
+      // 町のセレクト画面へ移動
+      this.$router.push({
+        name: 'city',
+        query: {
+          prefecturesID: prefecturesID
+        }
+      })
+    }
+  },
   mounted() {
     const self = this
 
     // 地名一覧の取得
     firebase
       .database()
-      .ref("areas")
+      .ref("prefectures")
       .on("child_added", snapshot => {
         const area = snapshot.val()
         console.log(area)
@@ -51,7 +63,7 @@ export default {
 }
 </script>
 
-<style lang="scss">
+<style scoped lang="scss">
   // バナー画像
   #bunnerArea{
     width: 90%;

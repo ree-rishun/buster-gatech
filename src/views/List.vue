@@ -198,23 +198,47 @@
       const self = this
 
       // クエリパラメータの取得
-      const searchData = this.$route.query
+      const queryData = this.$route.query
 
-      // 検索結果を取得（前方一致）
-      firebase.database().ref('/rooms')
-        .orderByChild('name').startAt(searchData.keyWord).endAt(searchData.keyWord + '\uf8ff')
-        .once('value',function(snapshot) {
-          const room = snapshot.val()
+      console.log(queryData.prefecturesID + '-' + queryData.cityID)
 
-          if (room !== null) {
-            // 新規部屋数を格納
-            self.rooms.list = Object.assign(self.rooms.list, room)
-            self.rooms.much = Object.assign(self.rooms.much, room)
+      // 検索条件分岐
+      if (queryData.mode === 'search') {
+        // 検索結果を取得（前方一致）
+        firebase.database().ref('/rooms')
+          .orderByChild('name').startAt(queryData.keyWord).endAt(queryData.keyWord + '\uf8ff')
+          .once('value',function(snapshot) {
+            const room = snapshot.val()
 
-            // 部屋数の更新
-            self.searchResultNum = Object.keys(self.rooms.much).length
-          }
-        })
+            if (room !== null) {
+              // 新規部屋数を格納
+              self.rooms.list = Object.assign(self.rooms.list, room)
+              self.rooms.much = Object.assign(self.rooms.much, room)
+
+              // 部屋数の更新
+              self.searchResultNum = Object.keys(self.rooms.much).length
+            }
+          })
+      } else if (queryData.mode === 'city') {
+        firebase.database().ref('/rooms')
+          .orderByChild('areaID')
+          .startAt(queryData.prefecturesID + '-' + queryData.cityID)
+          .endAt(queryData.prefecturesID + '-' + queryData.cityID)
+          .once('value',function(snapshot) {
+            const room = snapshot.val()
+            console.log(room)
+
+            if (room !== null) {
+              // 新規部屋数を格納
+              self.rooms.list = Object.assign(self.rooms.list, room)
+              self.rooms.much = Object.assign(self.rooms.much, room)
+
+              // 部屋数の更新
+              self.searchResultNum = Object.keys(self.rooms.much).length
+            }
+          })
+      }
+
 
       // カテゴリ一覧の取得
       firebase
@@ -391,12 +415,13 @@
   // 検索結果が見つからなかった場合
   .list_notfound{
     display: inline-block;
+    position: relative;
     z-index: 100;
     width: 70vw;
     height: 50vh;
     margin-left: 5vw;
     border-radius: 20px;
-    background: #c4c4c4;
+    background: #dddddd;
     box-shadow: 0 7px 10px 3px rgba(0,0,0,0.2);
     text-align: center;
 
@@ -405,8 +430,11 @@
       margin-top: 30px;
     }
     p{
+      position: absolute;
+      bottom: 20px;
+      width: 100%;
       font-weight: bold;
-      font-size: 1.4rem;
+      font-size: 1.3rem;
     }
   }
 
