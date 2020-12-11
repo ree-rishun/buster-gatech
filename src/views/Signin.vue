@@ -92,7 +92,7 @@
   // 送信ボタン
   .submit{
     height: 35px;
-    width: 80px;
+    width: 120px;
     border-radius: 35px;
     background: #fcdc4a;
     color: #111111;

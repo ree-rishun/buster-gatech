@@ -25,7 +25,18 @@
     <footer>
       <ul>
         <li><router-link to="/">ホーム</router-link></li>
-        <li><router-link to="/signup">会員登録</router-link></li>
+        <li>
+          <router-link
+            to="/signup"
+            v-if="userID === ''">
+            会員登録
+          </router-link>
+          <router-link
+            to="/mypage"
+            v-else>
+            マイページ
+          </router-link>
+        </li>
         <li><router-link to="/term">利用規約</router-link></li>
       </ul>
       <p>

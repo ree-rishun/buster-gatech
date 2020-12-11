@@ -1,6 +1,10 @@
 <template>
   <div>
     <h2>こんにちは、{{ user.lastName + user.firstName }} さん</h2>
+
+
+
+    <button>ログアウト</button>
   </div>
 </template>
 
@@ -40,6 +44,8 @@
   }
 </script>
 
-<style scoped>
-
+<style scoped lang="scss">
+  h2{
+    text-align: center;
+  }
 </style>

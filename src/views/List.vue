@@ -265,7 +265,7 @@
   }
 </script>
 
-<style lang="scss">
+<style scoped lang="scss">
   *{
     // outline: 1px solid red;
   }
