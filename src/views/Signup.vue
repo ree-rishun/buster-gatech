@@ -73,11 +73,10 @@
         // e-mailのフォーマット確認
 
         // Authenticationへの登録
-        firebase.auth().createUserWithEmailAndPassword(this.user.email, this.user.password)
+        firebase
+          .auth()
+          .createUserWithEmailAndPassword(this.user.email, this.user.password)
           .then((user) => {
-            console.log('登録成功！')
-            console.log(user)
-            console.log(user.user.uid)
 
             // 新規ユーザ作成
             firebase
@@ -92,6 +91,26 @@
                 merumaga: this.user.merumaga,
                 UID: user.user.uid
               })
+
+            // ログイン
+            firebase
+              .auth()
+              .signInWithEmailAndPassword(this.user.email, this.user.password)
+              .then((user) => {
+                console.log(user)
+
+                // ホームへ移動
+                this.$router.push('/');
+              })
+              .catch((error) => {
+                const errorCode = error.code
+                const errorMessage = error.message
+                console.log('ERROR CODE : ' + errorCode)
+                console.log(errorMessage)
+              })
+
+            // ホームへ移動
+            this.$router.push('/');
           })
           .catch((error) => {
             const errorCode = error.code

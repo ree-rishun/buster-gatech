@@ -3,7 +3,6 @@
     <h2>ログイン</h2>
 
     <label>
-    <label>
       <input type="email" v-model="user.email" placeholder="メールアドレス">
     </label>
     <label>
@@ -13,7 +12,7 @@
     <label>
       <button
         class="submit"
-        @click="registerSubmit">
+        @click="signin">
         ログイン
       </button>
     </label>
@@ -45,7 +44,21 @@
     },
     methods: {
       signin () {
+        firebase
+          .auth()
+          .signInWithEmailAndPassword(this.user.email, this.user.password)
+          .then((user) => {
+            console.log(user)
 
+            // ホームへ移動
+            this.$router.push('/');
+          })
+          .catch((error) => {
+            const errorCode = error.code
+            const errorMessage = error.message
+            console.log('ERROR CODE : ' + errorCode)
+            console.log(errorMessage)
+          })
       }
     }
   }

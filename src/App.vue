@@ -4,14 +4,14 @@
       <h1 @click="$router.push('/')">yadokari</h1>
       <span
         id="user_icon"
-        v-if="userID !== ''"
+        v-if="userID === ''"
         @click="$router.push('/signup')"
         title="ユーザ登録">
       </span>
       <span
         id="user_icon__active"
         v-else
-        @click="$router.push('/signup')"
+        @click="$router.push('/mypage')"
         title="マイページ">
       </span>
     </nav>
@@ -52,17 +52,18 @@ export default {
     userID: ''
   }),
   updated() {
-    const self = this
     firebase.auth().onAuthStateChanged((user) => {
+      console.log('user :')
+      console.log(user)
       if (user) {
+        console.log('if')
         const uid = user.uid;
-        console.log(uid)
-        self.userID = uid
+        this.userID = uid
       } else {
-        // User is signed out
-        // ...
+        console.log('else')
+        this.userID = ''
       }
-    });
+    })
   }
 };
 </script>
