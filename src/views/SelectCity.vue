@@ -99,9 +99,10 @@
       padding: 10px 12px;
       border-radius: 50px;
       background: #fcdc4a;
+      color: #111111;
+      font-family: 'Kosugi Maru', sans-serif;
       font-size: 13px;
       font-weight: bolder;
-      color: #ffffff;
       cursor: pointer;
 
       // ホバーアニメーション（透過）

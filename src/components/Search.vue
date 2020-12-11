@@ -73,7 +73,7 @@
     background-image: url("../assets/img/search.png");
     background-repeat: no-repeat;
     background-position: center;
-    background-size: cover;
+    background-size: $textbox-height - 15px;
     user-select: none;
     color: rgba(0, 0, 0, 0);
   }

@@ -263,13 +263,6 @@
     // outline: 1px solid red;
   }
 
-  body{
-    display: block;
-    width: 100vw;
-    height: 100vh;
-    overflow-y: hidden;
-  }
-
   // 検索結果一覧
   #list{
     display: block;
@@ -346,8 +339,8 @@
       font-size: 0.7rem;
       font-weight: bold;
       text-align: right;
-      color: #ffffff;
-      background: #ff4441;
+      color: #353535;
+      background: #fcdc4a;
 
       span{
         font-size: 2.3rem;
@@ -468,12 +461,12 @@
       }
     }
     .category_enable{
-      background: #ff4441;
-      color: #ffffff;
+      color: #111111;
+      background: #fcdc4a;
     }
     .category_disable{
-      background: #0080ff;
-      color: #ffffff;
+      color: #111111;
+      background: #cccccc;
     }
   }
 

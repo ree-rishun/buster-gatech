@@ -1,6 +1,6 @@
 <template>
   <div class="home">
-    <h2>地域を選択してください</h2>
+    <h2>引っ越し先から探す</h2>
 
     <ul id="areaList">
       <li
@@ -11,6 +11,15 @@
         {{ prefectures.name }}
       </li>
     </ul>
+
+    <h2>会員ならサクサク探せる</h2>
+    <div id="content_user">
+      <p>
+        会員のみ利用可能な特別機能満載！<br>
+        サクサクと物件を見つけませんか？
+      </p>
+    </div>
+
 
     <div id="bunnerArea">
       <img
@@ -90,16 +99,27 @@ export default {
       margin: 10px 5px;
       padding: 10px 12px;
       border-radius: 50px;
-      background: #ff4441;
       font-size: 13px;
       font-weight: bolder;
-      color: #ffffff;
+      background: #fcdc4a;
+      color: #111111;
       cursor: pointer;
+      font-family: 'Kosugi Maru', sans-serif;
 
       // ホバーアニメーション（透過）
       &:hover{
         opacity: .6;
       }
     }
+  }
+
+  #content_user{
+    width: 93%;
+    margin: 20px 0 0 7%;
+    line-height: 30px;
+    background-image: url("../assets/img/searchSmartphone.png");
+    background-repeat: no-repeat;
+    background-position: center right 5vw;
+    background-size: auto 60px;
   }
 </style>
