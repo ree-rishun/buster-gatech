@@ -307,13 +307,7 @@
         this.rooms.disable.push(roomID)
 
         // 検索結果を更新
-        const self = this
-        setTimeout(
-          function () {
-            self.updateRoom()
-          },
-          300
-        )
+        this.updateRoom()
       },
       evaluationFilter (evaluation) {
         // モードを指定
@@ -666,7 +660,7 @@
         border-right: solid 0.3px #888888;
 
         &:hover{
-          background-color: #ff4441;
+          // background-color: #ff4441;
         }
       }
       .evaluation_button__nope{
@@ -674,7 +668,7 @@
         background-image: url("../assets/img/nope.png");
 
         &:hover{
-          background-color: #0070ff;
+          // background-color: #0070ff;
         }
       }
     }
