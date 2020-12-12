@@ -6,6 +6,7 @@
       <li
         v-for="city in areas"
         :key="city.id"
+        :class="activeList === city.id ? 'active' : ''"
         @click="jampSelectCity(city.id)"
       >
         {{ city.name }}
@@ -28,20 +29,31 @@
       return {
         areas: [],
         categories: [],
-        prefecturesID: ''
+        prefecturesID: '',
+        activeList: ''
       }
     },
     methods: {
       jampSelectCity (cityID) {
-        // 町のセレクト画面へ移動
-        this.$router.push({
-          name: 'search',
-          query: {
-            mode: 'city',
-            prefecturesID: this.prefecturesID,
-            cityID: cityID
-          }
-        })
+        const self = this
+
+        // 選択されたリストをアクティブに
+        this.activeList = cityID
+
+        // 検索結果を表示
+        setTimeout(
+          function () {
+            self.$router.push({
+              name: 'search',
+              query: {
+                mode: 'city',
+                prefecturesID: self.prefecturesID,
+                cityID: cityID
+              }
+            })
+          },
+          160
+        )
       }
     },
     mounted () {
@@ -61,6 +73,14 @@
           console.log(city)
           self.areas.push(city)
         })
+
+      // ホバーアニメーションの有効化
+      setTimeout(
+        function () {
+          self.disableHover = false
+        },
+        300
+      )
     }
   }
 </script>
@@ -79,6 +99,7 @@
     margin-top: 20px;
     text-align: center;
   }
+  $delay: .3s;
   #areaList{
     display: block;
     width: 90%;
@@ -92,17 +113,19 @@
       margin: 10px 5px;
       padding: 10px 12px;
       border-radius: 50px;
-      background: #fcdc4a;
       color: #111111;
       font-family: 'Kosugi Maru', sans-serif;
+      background: #fcdc4a;
       font-size: 13px;
       font-weight: bolder;
       cursor: pointer;
-
-      // ホバーアニメーション（透過）
-      &:hover{
-        // opacity: .6;
-      }
+      -webkit-transition: all $delay ease;
+      -moz-transition: all $delay ease;
+      -o-transition: all $delay ease;
+      transition: all  $delay ease;
+    }
+    .active{
+      background: #9f9f9f;
     }
   }
 </style>

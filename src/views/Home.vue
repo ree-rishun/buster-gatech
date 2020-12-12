@@ -6,6 +6,7 @@
       <li
         v-for="prefectures in areas"
         :key="prefectures.id"
+        :class="activeList === prefectures.id ? 'active' : ''"
         @click="jampSelectCity(prefectures.id)"
       >
         {{ prefectures.name }}
@@ -100,18 +101,29 @@ export default {
   data () {
     return {
       areas: [],
-      categories: []
+      categories: [],
+      activeList: ''
     }
   },
   methods: {
     jampSelectCity (prefecturesID) {
+      const self = this
+
+      // 選択されたリストをアクティブに
+      this.activeList = prefecturesID
+
       // 町のセレクト画面へ移動
-      this.$router.push({
-        name: 'city',
-        query: {
-          prefecturesID: prefecturesID
-        }
-      })
+      setTimeout(
+        function () {
+          self.$router.push({
+            name: 'city',
+            query: {
+              prefecturesID: prefecturesID
+            }
+          })
+        },
+        200
+      )
     }
   },
   mounted() {
@@ -144,6 +156,7 @@ export default {
     margin-top: 20px;
     text-align: center;
   }
+  $delay: .2s;
   #areaList{
     display: block;
     width: 90%;
@@ -163,11 +176,13 @@ export default {
       color: #111111;
       cursor: pointer;
       font-family: 'Kosugi Maru', sans-serif;
-
-      // ホバーアニメーション（透過）
-      &:hover{
-        // opacity: .6;
-      }
+      -webkit-transition: all $delay ease;
+      -moz-transition: all $delay ease;
+      -o-transition: all $delay ease;
+      transition: all  $delay ease;
+    }
+    .active{
+      background: #9f9f9f;
     }
   }
 
