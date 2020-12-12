@@ -27,7 +27,7 @@
         id="list_wideview"
         v-if="imageReadyFlg">
         <div
-          v-for="roomID in rooms.much"
+          v-for="roomID in rooms.show"
           :class="'list_content ' + rooms.list[roomID].mode"
           :key="roomID">
           <div class="card"
@@ -61,7 +61,7 @@
         </div>
         <div
           class="list_notfound"
-          v-if="rooms.much.length === 0">
+          v-if="rooms.show.length === 0">
           <img src="../assets/img/notfound.png">
           <p>
             お探しの条件は<br>
@@ -176,6 +176,7 @@
         // 値のアップデート
         this.updateCategory()
         this.updateRoom()
+        this.getDuplicateList()
       },
       disable (suffix) {
         // 有効化一覧から削除
@@ -184,6 +185,7 @@
         // 値のアップデート
         this.updateCategory()
         this.updateRoom()
+        this.getDuplicateList()
       },
       updateCategory () { // カテゴリ一覧のアップデート
         let disableCategoryList = {}
@@ -225,7 +227,9 @@
         // this.getDuplicateList()
 
         // モードによって分岐
-        this.rooms.much = this.rooms[this.evalutionMode]
+        this.rooms.show = this.rooms[this.evalutionMode]
+        console.log('this.rooms.show')
+        console.log(this.rooms.show)
       },
       getIsDuplicate (arr1, arr2) { // 配列同士の一致するプロパティ数を取得
         return [...arr1, ...arr2].filter(item => arr1.includes(item) && arr2.includes(item)).length
@@ -247,6 +251,9 @@
         } else {
           this.rooms.nope = []
         }
+
+        // 表示リストの更新
+        this.rooms.show = this.rooms[this.evalutionMode]
       },
       evaluationAdd (evaluation, roomID) {
         // 変数内の値を整理
