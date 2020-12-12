@@ -217,14 +217,8 @@
         // 部屋数の更新
         this.searchResultNum = Object.keys(muchRoomList).length
 
-        console.log('muchRoomList :')
-        console.log(muchRoomList)
-
         // 条件一致リストの更新
         this.rooms.much = muchRoomList
-
-        console.log('this.rooms.much')
-        console.log(this.rooms.much)
 
         // 評価リストの更新
         this.getDuplicateList()
@@ -239,11 +233,6 @@
         return [...arr1, ...arr2].filter((value, index, self) => self.indexOf(value) === index && self.lastIndexOf(value) !== index)
       },
       getDuplicateList () {
-
-        console.log('getDuplicateList : ')
-        console.log(this.user.rooms.like)
-        console.log(this.user.rooms.nope)
-
         // likeリストへ格納
         if (this.user.rooms.like.length > 0) {
           this.rooms.like = this.getIsDuplicateValues(this.user.rooms.like, this.rooms.much)
@@ -259,34 +248,59 @@
         }
       },
       evaluationAdd (evaluation, roomID) {
-        if (evaluation === 'like' && this.evalutionMode === 'nope') {
+        if (evaluation === 'like') {
           // nope内でlikeされた場合
-          this.user.rooms.nope = this.user.rooms.nope.filter(n => n !== roomID)
+          if (this.evalutionMode === 'nope') {
+            console.log('実験')
+            console.log(this.user.rooms.nope)
+            console.log(this.user.rooms.nope.filter(n => n !== roomID))
+            this.user.rooms.nope = this.user.rooms.nope.filter(item => item !== roomID)
+            this.rooms.nope = this.rooms.nope.filter(item => item !== roomID)
+          }
+
+          // 追加
+          this.rooms.like.push(roomID)
         } else if(evaluation === 'nope') {
           // like内でnopeされた場合
-          this.user.rooms.like = this.user.rooms.like.filter(n => n !== roomID)
-        }
+          if (this.evalutionMode === 'like') {
+            console.log('実験')
+            console.log(this.user.rooms.like)
+            console.log(this.user.rooms.like.filter(n => n !== roomID))
+            this.user.rooms.like = this.user.rooms.like.filter(item => item !== roomID)
+            this.rooms.like = this.rooms.like.filter(item => item !== roomID)
+          }
 
-        // 追加
-        this.user.rooms[evaluation].push(roomID)
+          // 追加
+          this.rooms.nope.push(roomID)
+        }
 
         // 現状の評価値を取得して更新
         firebase
           .database()
-          .ref('users/' + this.userID + '/evalution')
+          .ref('users/' + this.userID)
           .once('value').then((snapshot) => {
           // 値を格納
-          let evaluationArray = snapshot.val()
+          let userObj = snapshot.val()
+
+          console.log('this.rooms.like')
+          console.log(this.rooms.like)
+          console.log('this.rooms.nope')
+          console.log(this.rooms.nope)
 
           // 値の更新
-          evaluationArray.like = this.rooms.like
-          evaluationArray.nope = this.rooms.nope
+          userObj.evalution = {
+            like: this.rooms.like,
+            nope: this.rooms.nope
+          }
+
+          console.log('userObj :')
+          console.log(userObj)
 
           // 更新後の配列をDBへ格納
           firebase
             .database()
-            .ref('users/' + this.userID + '/evalution')
-            .set(evaluationArray)
+            .ref('users/' + this.userID)
+            .set(userObj)
         })
 
         // 検索結果から省く
