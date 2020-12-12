@@ -11,12 +11,6 @@
         {{ city.name }}
       </li>
     </ul>
-
-    <div id="bunnerArea">
-      <img
-        src="../assets/img/bunner.png"
-        class="bunnerImg">
-    </div>
   </div>
 </template>
 

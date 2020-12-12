@@ -5,12 +5,13 @@
     <label>
       <button
         class="list_button"
-        @click="$router.push({''})"><span class="list_button__like"></span>お気に入り</button>
+        @click="$router.push({name: 'search', query: { mode: 'like' }})"><span class="list_button__like"></span>お気に入り</button>
     </label>
 
     <label>
       <button
-        class="list_button"><span class="list_button__nope"></span>除外</button>
+        class="list_button"
+        @click="$router.push({name: 'search', query: { mode: 'nope' }})"><span class="list_button__nope"></span>除外</button>
     </label>
 
     <label>
@@ -20,7 +21,8 @@
 
     <label>
       <button
-        class="logout">ログアウト</button>
+        class="logout"
+        @click="logout">ログアウト</button>
     </label>
   </div>
 </template>
@@ -39,7 +41,10 @@
       }
     },
     methods: {
-
+      logout () {
+        firebase.auth().signOut()
+        this.$router.push('/')
+      }
     },
     mounted () {
 

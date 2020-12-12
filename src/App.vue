@@ -18,7 +18,9 @@
     <div id="searchBar">
       <Search/>
     </div>
-    <router-view></router-view>
+    <div id="view_rapper">
+      <router-view></router-view>
+    </div>
     <img
       class="footer_design"
       src="./assets/img/city.png">
@@ -132,6 +134,10 @@ export default {
   #searchBar{
     width: 90vw;
     margin: 15px 0 10px 5vw;
+  }
+
+  #view_rapper{
+    min-height: 60vh;
   }
 
   // フッター上の画像

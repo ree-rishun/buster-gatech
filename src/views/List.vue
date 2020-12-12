@@ -109,13 +109,14 @@
     data () {
       return {
         rooms: {
-          much: {},
-          list: {},
-          images: {},
-          disable: [],
-          like: [],
-          nope: [],
-          new: []
+          list: {},     // 全内容格納
+          much: {},     // カテゴリと検索結果の一致した内容
+          show: {},     // 表示用の結果
+          images: {},   // 全部屋の背景画像
+          disable: [],  // 無効化された部屋ID
+          like: [],     // LIKEに登録されている部屋 && 検索条件に一致
+          nope: [],     // NOPEに登録されている部屋 && 検索条件に一致
+          new: []       // LIKE / NOPEに登録されていない部屋 && 検索条件に一致
         },
         user: {
           rooms: {
@@ -221,7 +222,7 @@
         this.rooms.much = muchRoomList
 
         // 評価リストの更新
-        this.getDuplicateList()
+        // this.getDuplicateList()
 
         // モードによって分岐
         this.rooms.much = this.rooms[this.evalutionMode]
@@ -248,31 +249,33 @@
         }
       },
       evaluationAdd (evaluation, roomID) {
+        // 変数内の値を整理
         if (evaluation === 'like') {
           // nope内でlikeされた場合
           if (this.evalutionMode === 'nope') {
-            console.log('実験')
-            console.log(this.user.rooms.nope)
-            console.log(this.user.rooms.nope.filter(n => n !== roomID))
+            // likeへ移動したIDをnopeから削除
             this.user.rooms.nope = this.user.rooms.nope.filter(item => item !== roomID)
             this.rooms.nope = this.rooms.nope.filter(item => item !== roomID)
           }
 
-          // 追加
+          // likeへ追加
           this.rooms.like.push(roomID)
         } else if(evaluation === 'nope') {
           // like内でnopeされた場合
           if (this.evalutionMode === 'like') {
-            console.log('実験')
-            console.log(this.user.rooms.like)
-            console.log(this.user.rooms.like.filter(n => n !== roomID))
+            // nopeへ移動したIDをlikeから削除
             this.user.rooms.like = this.user.rooms.like.filter(item => item !== roomID)
             this.rooms.like = this.rooms.like.filter(item => item !== roomID)
           }
 
-          // 追加
+          // nopeへ追加
           this.rooms.nope.push(roomID)
         }
+
+        console.log('this.rooms.like')
+        console.log(this.rooms.like)
+        console.log('this.rooms.nope')
+        console.log(this.rooms.nope)
 
         // 現状の評価値を取得して更新
         firebase
