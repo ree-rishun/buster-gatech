@@ -6,16 +6,21 @@
         v-if="userID !== ''">
         <span
           @click="evaluationFilter('like')"
-          class="evaluation_param__like">
+          :class="(evalutionMode === 'like' ? 'active' : '') + ' evaluation_param__like'">
           {{ rooms.like.length }}
         </span>
         <span
           @click="evaluationFilter('nope')"
-          class="evaluation_param__nope">
+          :class="(evalutionMode === 'nope' ? 'active' : '') + ' evaluation_param__nope'">
           {{ rooms.nope.length }}
         </span>
+        <span
+          @click="evaluationFilter('new')"
+          :class="(evalutionMode === 'new' ? 'active' : '') + ' evaluation_param__new'">
+          {{ rooms.new.length }}
+        </span>
       </span>
-      {{ imageReadyFlg ? (searchResultNum + rooms.like.length + rooms.nope.length) + ' 件が一致' : '検索中...' }}
+      {{ imageReadyFlg ? (rooms.like.length + rooms.nope.length + rooms.new.length) + ' HIT' : '検索中...' }}
     </div>
     <div id="list">
       <div
@@ -44,10 +49,12 @@
               v-if="userID !== ''">
               <span
                 class="evaluation_button__like"
-                @click="evaluationAdd('like', room.id)">
+                v-if="evalutionMode !== 'like'"
+                @click="evaluationAdd('like', roomID)">
               </span><span
               class="evaluation_button__nope"
-              @click="evaluationAdd('nope', room.id)">
+              v-if="evalutionMode !== 'nope'"
+              @click="evaluationAdd('nope', roomID)">
             </span>
             </div>
           </div>
@@ -107,7 +114,14 @@
           images: {},
           disable: [],
           like: [],
-          nope: []
+          nope: [],
+          new: []
+        },
+        user: {
+          rooms: {
+            like: [],
+            nope: []
+          }
         },
         imageReadyFlg: false,
         searchResultNum: 0,
@@ -117,7 +131,8 @@
           disable: {},
           list: {}
         },
-        userID: ''
+        userID: '',
+        evalutionMode: 'new'
       }
     },
     methods: {
@@ -185,25 +200,37 @@
       },
       updateRoom () { // 部屋一覧のアップデート
         let muchRoomList = []
+        // 初期化
+        this.rooms.new = []
 
         // 抽出処理
         for (let roomID in this.rooms.list) {
-          // 無効化リストに存在する場合は飛ばす
-          if (this.rooms.disable.indexOf(roomID) > -1) {
-            continue
-          }
-
           // カテゴリ一覧にヒットするもののみ抽出
           if (this.getIsDuplicate(this.rooms.list[roomID].categories, this.categories.enable) === this.getIsDuplicate(this.categories.enable, this.categories.enable)) {
             muchRoomList.push(roomID)
+            if (this.rooms.disable.indexOf(roomID) === -1) {
+              this.rooms.new.push(roomID)
+            }
           }
         }
+
         // 部屋数の更新
         this.searchResultNum = Object.keys(muchRoomList).length
 
-        // 代入
+        console.log('muchRoomList :')
+        console.log(muchRoomList)
+
+        // 条件一致リストの更新
         this.rooms.much = muchRoomList
 
+        console.log('this.rooms.much')
+        console.log(this.rooms.much)
+
+        // 評価リストの更新
+        this.getDuplicateList()
+
+        // モードによって分岐
+        this.rooms.much = this.rooms[this.evalutionMode]
       },
       getIsDuplicate (arr1, arr2) { // 配列同士の一致するプロパティ数を取得
         return [...arr1, ...arr2].filter(item => arr1.includes(item) && arr2.includes(item)).length
@@ -212,51 +239,54 @@
         return [...arr1, ...arr2].filter((value, index, self) => self.indexOf(value) === index && self.lastIndexOf(value) !== index)
       },
       getDuplicateList () {
-        const listArray = Object.keys(this.rooms.list)
-        console.log('listArray :')
-        console.log(listArray)
-        console.log('this.evalution.like :')
-        console.log(this.rooms.like)
+
+        console.log('getDuplicateList : ')
+        console.log(this.user.rooms.like)
+        console.log(this.user.rooms.nope)
 
         // likeリストへ格納
-        this.rooms.like = this.getIsDuplicateValues(this.rooms.like, listArray)
+        if (this.user.rooms.like.length > 0) {
+          this.rooms.like = this.getIsDuplicateValues(this.user.rooms.like, this.rooms.much)
+        } else {
+          this.rooms.like = []
+        }
 
         // nopeリストへ格納
-        this.rooms.nope = this.getIsDuplicateValues(this.rooms.nope, listArray)
+        if (this.user.rooms.nope.length > 0) {
+          this.rooms.nope = this.getIsDuplicateValues(this.user.rooms.nope, this.rooms.much)
+        } else {
+          this.rooms.nope = []
+        }
       },
       evaluationAdd (evaluation, roomID) {
-        let evaluationBox = ''
-
-        // 値を正式な値へ変換（現状は変化なしだけど…）
-        if (evaluation === 'like') {
-          evaluationBox = 'like'
+        if (evaluation === 'like' && this.evalutionMode === 'nope') {
+          // nope内でlikeされた場合
+          this.user.rooms.nope = this.user.rooms.nope.filter(n => n !== roomID)
         } else if(evaluation === 'nope') {
-          evaluationBox = 'nope'
+          // like内でnopeされた場合
+          this.user.rooms.like = this.user.rooms.like.filter(n => n !== roomID)
         }
+
+        // 追加
+        this.user.rooms[evaluation].push(roomID)
 
         // 現状の評価値を取得して更新
         firebase
           .database()
-          .ref('users/' + this.userID + '/evalution/' + evaluationBox)
+          .ref('users/' + this.userID + '/evalution')
           .once('value').then((snapshot) => {
           // 値を格納
-          let evalutionArray = snapshot.val()
+          let evaluationArray = snapshot.val()
 
-          // 空の場合・存在しない場合は空の配列を格納
-          if (evalutionArray === null) {
-            evalutionArray = []
-          }
-
-          // 配列への新規値の追加（同じ値が存在しない場合のみ）
-          if (evalutionArray.indexOf(roomID) === -1) {
-            evalutionArray.push(roomID)
-          }
+          // 値の更新
+          evaluationArray.like = this.rooms.like
+          evaluationArray.nope = this.rooms.nope
 
           // 更新後の配列をDBへ格納
           firebase
             .database()
-            .ref('users/' + this.userID + '/evalution/' + evaluationBox)
-            .set(evalutionArray)
+            .ref('users/' + this.userID + '/evalution')
+            .set(evaluationArray)
         })
 
         // 検索結果から省く
@@ -272,9 +302,11 @@
         )
       },
       evaluationFilter (evaluation) {
-        if (evaluation === 'like') {
-          this.rooms.much = this.rooms.like
-        }
+        // モードを指定
+        this.evalutionMode = evaluation
+
+        // アップデート
+        this.updateRoom()
       }
     },
     mounted () {
@@ -291,7 +323,6 @@
         const categories = snapshot.val()
 
         for (let category in categories) {
-          console.log(categories[category])
           if (category !== undefined) {
             // 値の追加
             self.categories.list[category] = categories[category]
@@ -332,7 +363,6 @@
           .endAt(queryData.prefecturesID + '-' + queryData.cityID)
           .once('value',function(snapshot) {
             const room = snapshot.val()
-            console.log(room)
 
             if (room !== null) {
               // 新規部屋数を格納
@@ -371,13 +401,16 @@
               if (evalution.like !== null && evalution.like !== undefined) {
                 // 無効化リストへ格納
                 this.rooms.disable = this.rooms.disable.concat(evalution.like)
-                this.rooms.like = evalution.like
+                this.user.rooms.like = evalution.like
               }
               if (evalution.nope !== null && evalution.nope !== undefined) {
                 // 無効化リストへ格納
                 this.rooms.disable = this.rooms.disable.concat(evalution.nope)
-                this.rooms.nope = evalution.nope
+                this.user.rooms.nope = evalution.nope
               }
+              console.log('取得部分')
+              console.log(this.rooms.like)
+              console.log(this.rooms.nope)
 
               // 部屋のリストを更新
               this.updateRoom()
@@ -420,6 +453,7 @@
       position: absolute;
       left: 4px;
 
+      $evaluation-delay: .4s;
       // 共通スタイル
       span{
         display: inline-block;
@@ -429,6 +463,14 @@
         line-height: 30px;
         border-radius: 30px;
         padding: 0 10px 0 35px;
+        -webkit-transition: all $evaluation-delay ease;
+        -moz-transition: all $evaluation-delay ease;
+        -o-transition: all $evaluation-delay ease;
+        transition: all  $evaluation-delay ease;
+
+        &.active{
+          background-color: #cccccc;
+        }
       }
       // likeのスタイル
       .evaluation_param__like{
@@ -437,13 +479,36 @@
         background-position: left 10px center;
         background-image: url("../assets/img/like.png");
         background-color: #ff4441;
+
+        &.active{
+          color: #ff4441;
+          background-image: url("../assets/img/like_red.png");
+        }
       }
       // nopeのスタイル
       .evaluation_param__nope{
+        margin-right: 10px;
         background-size: 15px;
         background-position: left 10px center;
         background-image: url("../assets/img/nope.png");
         background-color: #4290ff;
+
+        &.active{
+          color: #4290ff;
+          background-image: url("../assets/img/nope_bl.png");
+        }
+      }
+      // newのスタイル
+      .evaluation_param__new{
+        background-size: 15px;
+        background-position: left 10px center;
+        background-image: url("../assets/img/search_wh.png");
+        background-color: #fcdc4a;
+
+        &.active{
+          color: #fcdc4a;
+          background-image: url("../assets/img/search.png");
+        }
       }
     }
   }
@@ -456,17 +521,12 @@
   }
 
   // 部屋ごとのスタイル
-  $flick_time: 0.5s;
   .list_content{
     position: relative;
     display: inline-block;
     width: 70vw;
     height: 50vh;
     margin: 0 5vw;
-    -webkit-transition: all $flick_time ease;
-    -moz-transition: all $flick_time ease;
-    -o-transition: all $flick_time ease;
-    transition: all  $flick_time ease;
   }
 
   // 詳細カード
@@ -567,7 +627,7 @@
       position: absolute;
       bottom: -10px;
       right: -20px;
-      width: 100px;
+      width: auto;
       height: 50px;
       background: rgba(0,0,0,.9);
       border-radius: 5px;
@@ -577,8 +637,8 @@
       $evaluation-delay: .3s;
       span{
         display: inline-block;
-        width: 50%;
-        height: 100%;
+        width: 50px;
+        height: 50px;
         background-repeat: no-repeat;
         background-position: center;
         -webkit-transition: all $evaluation-delay ease;
