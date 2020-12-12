@@ -267,6 +267,7 @@
 
           // likeへ追加
           this.rooms.like.push(roomID)
+          this.user.rooms.like.push(roomID)
         } else if(evaluation === 'nope') {
           // like内でnopeされた場合
           if (this.evalutionMode === 'like') {
@@ -277,6 +278,7 @@
 
           // nopeへ追加
           this.rooms.nope.push(roomID)
+          this.user.rooms.nope.push(roomID)
         }
 
         console.log('this.rooms.like')
@@ -299,8 +301,8 @@
 
           // 値の更新
           userObj.evalution = {
-            like: this.rooms.like,
-            nope: this.rooms.nope
+            like: this.user.rooms.like,
+            nope: this.user.rooms.nope
           }
 
           console.log('userObj :')
