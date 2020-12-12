@@ -2,9 +2,26 @@
   <div>
     <h2>こんにちは、{{ user.lastName + user.firstName }} さん</h2>
 
+    <label>
+      <button
+        class="list_button"
+        @click="$router.push({''})"><span class="list_button__like"></span>お気に入り</button>
+    </label>
 
+    <label>
+      <button
+        class="list_button"><span class="list_button__nope"></span>除外</button>
+    </label>
 
-    <button>ログアウト</button>
+    <label>
+      <button
+        class="list_button"><span class="list_button__setting"></span>ユーザ情報の変更</button>
+    </label>
+
+    <label>
+      <button
+        class="logout">ログアウト</button>
+    </label>
   </div>
 </template>
 
@@ -15,7 +32,10 @@
     name: 'Mypage',
     data () {
       return {
-        user: {}
+        user: {
+          lastName: '',
+          firstName: ''
+        }
       }
     },
     methods: {
@@ -45,7 +65,52 @@
 </script>
 
 <style scoped lang="scss">
+  // タイトル
   h2{
     text-align: center;
+  }
+
+  // ログアウトボタン
+  label{
+    display: block;
+    text-align: center;
+    width: 100%;
+    margin: 20px 0;
+
+    // メニューボタン
+    .list_button{
+      background: #ffffff;
+      width: 90%;
+      height: 40px;
+      line-height: 40px;
+      border-radius: 5px;
+
+      // アイコン表示
+      span{
+        display: inline-block;
+        width: 35px;
+        height: 100%;
+        background-repeat: no-repeat;
+        background-position: center;
+        vertical-align: middle;
+      }
+      .list_button__like{
+        background-image: url('../assets/img/like_bk.png');
+        background-size: auto 18px;
+      }
+      .list_button__nope{
+        background-image: url('../assets/img/nope_bk.png');
+        background-size: auto 13px;
+      }
+      .list_button__setting{
+        background-image: url('../assets/img/pc.png');
+        background-size: auto 40px;
+      }
+    }
+    // ログアウトボタン
+    .logout{
+      color: #ff4441;
+      text-decoration: underline;
+    }
   }
 </style>
