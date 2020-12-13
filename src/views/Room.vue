@@ -2,7 +2,7 @@
   <div>
     <div
       id="top_cover"
-      :style="'background-image: url(\'' + images[0] + '\');'">
+      :style="pageEnable? 'background-image: url(\'' + images[0] + '\');' : 'background-image: url(\'' + images[0] + '\');'">
 
       <span
         @click="jumpPrev"
@@ -225,14 +225,12 @@
 
           // 画像リンクの取得
           ref.getDownloadURL().then((url) => {
-            console.log('url :')
-            console.log(url)
-            this.images.push(url)
-
-            console.log(this.images)
+            this.images[id] = url
 
             // 画像を読み込んだらページを表示
-            this.pageEnable = true
+            if (id === '0') {
+              this.pageEnable = true
+            }
           })
         }
       },
