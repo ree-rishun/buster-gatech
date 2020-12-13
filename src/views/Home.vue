@@ -82,7 +82,9 @@
       </div>
 
       <div class="content_user__link">
-        <router-link to="/signup">会員登録はこちら</router-link>
+        <router-link
+          to="/signup"
+          v-if="!login">会員登録はこちら</router-link>
       </div>
     </div>
   </div>
@@ -102,7 +104,8 @@ export default {
     return {
       areas: [],
       categories: [],
-      activeList: ''
+      activeList: '',
+      login: false
     }
   },
   methods: {
@@ -133,6 +136,12 @@ export default {
         console.log(area)
         self.areas.push(area)
       })
+
+    // ログインユーザ情報の取得
+    firebase.auth().onAuthStateChanged((auth) => {
+      // ログイン状態を代入
+      this.login = (auth !== null)
+    })
   }
 }
 </script>
