@@ -19,8 +19,12 @@
           :class="(evalutionMode === 'new' ? 'active' : '') + ' evaluation_param__new'">
           {{ rooms.new.length }}
         </span>
+        <span
+          class="evaluation_param__much">
+          {{ rooms.like.length + rooms.nope.length + rooms.new.length }}
+        </span>
       </span>
-      {{ imageReadyFlg ? (rooms.like.length + rooms.nope.length + rooms.new.length) + ' HIT' : '検索中...' }}
+      {{ imageReadyFlg ? '' : '検索中...' }}
     </div>
     <div id="list">
       <div
@@ -30,8 +34,10 @@
           v-for="roomID in rooms.show"
           :class="'list_content ' + rooms.list[roomID].mode"
           :key="roomID">
-          <div class="card"
-               :style="'background-image: url(\'' + rooms.images[roomID] + '\');'">
+          <div
+            class="card"
+            @click="jumpRoomPage(roomID)"
+            :style="'background-image: url(\'' + rooms.images[roomID] + '\');'">
             <div class="list_params">
               <h3>{{ rooms.list[roomID].name }}</h3>
               <div class="list_description">
@@ -50,11 +56,11 @@
               <span
                 class="evaluation_button__like"
                 v-if="evalutionMode !== 'like'"
-                @click="evaluationAdd('like', roomID)">
+                @click.stop="evaluationAdd('like', roomID)">
               </span><span
               class="evaluation_button__nope"
               v-if="evalutionMode !== 'nope'"
-              @click="evaluationAdd('nope', roomID)">
+              @click.stop="evaluationAdd('nope', roomID)">
             </span>
             </div>
           </div>
@@ -168,6 +174,14 @@
       },
       convTenThousand (price) { // 1万円で割り、小数点以下1桁を表記
         return (price / 10000).toFixed(1)
+      },
+      jumpRoomPage (roomID) {
+        this.$router.push({
+          path: '/room/' + roomID,
+          query: {
+            prevPath: this.$route.path,
+            prevQuery: this.$route.query
+          }})
       },
       enable (categoryID) {
         // 有効化一覧へ追加
@@ -524,11 +538,20 @@
         background-position: left 10px center;
         background-image: url("../assets/img/search_wh.png");
         background-color: #fcdc4a;
+        margin-right: 10px;
 
         &.active{
           color: #fcdc4a;
           background-image: url("../assets/img/search.png");
         }
+      }
+      // muchのスタイル
+      .evaluation_param__much{
+        background-size: 15px;
+        background-position: left 10px center;
+        background-image: url("../assets/img/much.png");
+        background-color: #ffffff;
+        color: #111111;
       }
     }
   }

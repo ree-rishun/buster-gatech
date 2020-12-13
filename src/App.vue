@@ -1,6 +1,6 @@
 <template>
   <v-app style="background: none">
-    <nav>
+    <nav v-if="!disableTop">
       <h1 @click="$router.push('/')">yadokari</h1>
       <span
         id="user_icon"
@@ -15,12 +15,17 @@
         title="マイページ">
       </span>
     </nav>
-    <div id="searchBar">
+
+    <div
+      id="searchBar"
+      v-if="!disableTop">
       <Search/>
     </div>
+
     <div id="view_rapper">
       <router-view></router-view>
     </div>
+
     <img
       class="footer_design"
       src="./assets/img/city.png">
@@ -62,18 +67,25 @@ export default {
     Search
   },
   data: () => ({
-    userID: ''
+    userID: '',
+    disableTop: false
   }),
+  mounted () {
+    // 画面上部のUI表示の無効化
+    this.disableTop = (this.$route.name === 'roomPage')
+  },
   updated() {
+    // 画面上部のUI表示の無効化
+    this.disableTop = (this.$route.name === 'roomPage')
+
+    console.log(this.$route)
+
+      // ログイン状態確認
     firebase.auth().onAuthStateChanged((user) => {
-      console.log('user :')
-      console.log(user)
       if (user) {
-        console.log('if')
         const uid = user.uid
         this.userID = uid
       } else {
-        console.log('else')
         this.userID = ''
       }
     })

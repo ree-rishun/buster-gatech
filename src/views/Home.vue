@@ -115,12 +115,7 @@ export default {
       // 町のセレクト画面へ移動
       setTimeout(
         function () {
-          self.$router.push({
-            name: 'city',
-            query: {
-              prefecturesID: prefecturesID
-            }
-          })
+          self.$router.push('city/' + prefecturesID)
         },
         200
       )

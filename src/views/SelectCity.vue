@@ -60,9 +60,7 @@
       const self = this
 
       // クエリパラメータの取得
-      const queryData = this.$route.query
-
-      this.prefecturesID = queryData.prefecturesID
+      this.prefecturesID = this.$route.params.prefecturesID
 
       // 地名一覧の取得
       firebase
