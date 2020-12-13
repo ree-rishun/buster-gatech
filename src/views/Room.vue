@@ -36,6 +36,11 @@
       <tr>
         <th>間取り</th>
         <td>{{ room.layout }}</td>
+        <td>
+          <span
+            class="help_button"
+            @click="openTips('layout')"></span>
+        </td>
       </tr>
       <tr>
         <th>面積</th>
@@ -78,18 +83,38 @@
       <tr>
         <th>賃料</th>
         <td>{{ room.price.toLocaleString() }}円</td>
+        <td>
+          <span
+            class="help_button"
+            @click="openTips('rent')"></span>
+        </td>
       </tr>
       <tr>
         <th>仲介料</th>
         <td>{{ room.brokerageFee.toLocaleString() }}円</td>
+        <td>
+          <span
+            class="help_button"
+            @click="openTips('brokerageFee')"></span>
+        </td>
       </tr>
       <tr>
         <th>敷金</th>
         <td>{{ room.deposit.toLocaleString() }}円</td>
+        <td>
+          <span
+            class="help_button"
+            @click="openTips('deposit')"></span>
+        </td>
       </tr>
       <tr>
         <th>礼金</th>
         <td>{{ room.keymoney.toLocaleString() }}円</td>
+        <td>
+          <span
+            class="help_button"
+            @click="openTips('keymoney')"></span>
+        </td>
       </tr>
       <tr>
         <th>その他</th>
@@ -124,12 +149,18 @@
         :images="images"
         @slide_break="openSlide = false"/>
     </div>
+
+    <Tips
+      :tipsID="tips.id"
+      v-if="tips.open"
+      @tips_break="tips.open = false"/>
   </div>
 </template>
 
 <script>
   import firebase from 'firebase'
   import ImageSlide from '../components/ImageSlide'
+  import Tips from '../components/Tips'
 
   export default {
     name: 'Room',
@@ -146,11 +177,16 @@
           query: ''
         },
         company: {},
-        openSlide: false
+        openSlide: false,
+        tips: {
+          id: '',
+          open: false
+        }
       }
     },
     components: {
-      ImageSlide
+      ImageSlide,
+      Tips
     },
     methods: {
       convTenThousand (price) { // 1万円で割り、小数点以下1桁を表記
@@ -205,6 +241,10 @@
         const now = new Date()
         const sub = now - targetTime
         return Math.floor( sub /  (365 * 24 * 60 * 60 * 1000))
+      },
+      openTips (tipsID) {
+        this.tips.id = tipsID
+        this.tips.open = true
       }
     },
     mounted () {
@@ -274,6 +314,7 @@
       background-size: cover;
     }
 
+    // ページトップの賃貸概要
     #top_cover__description{
       position: absolute;
       top: 60vw;
@@ -328,6 +369,7 @@
         }
       }
 
+      // 家賃以外の価格
       .price_other{
         display: inline-block;
         vertical-align: top;
@@ -392,6 +434,15 @@
       line-height: 40px;
       text-align: left;
     }
+    .help_button{
+      display: block;
+      width: 22px;
+      height: 22px;
+      background-image: url("../assets/img/helpButton.png");
+      background-repeat: no-repeat;
+      background-position: center;
+      background-size: cover;
+    }
   }
   .room_cost__list{
     td{
@@ -399,6 +450,7 @@
     }
   }
 
+  // 画像スライド
   #imageSlide{
     position: fixed;
     z-index: 300;
