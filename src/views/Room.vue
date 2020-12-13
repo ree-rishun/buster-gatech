@@ -7,7 +7,9 @@
       <span
         @click="jumpPrev"
         class="top_cover__prevbutton"></span>
-      <span class="top_cover__photobutton"></span>
+      <span
+        @click="openSlide = true"
+        class="top_cover__photobutton"></span>
 
       <div id="top_cover__description">
         <h2>{{ room.name }}</h2>
@@ -114,11 +116,20 @@
         <td>{{ company.transactionForm }}</td>
       </tr>
     </table>
+
+    <div
+      v-if="openSlide"
+      id="imageSlide">
+      <ImageSlide
+        :images="images"
+        @slide_break="openSlide = false"/>
+    </div>
   </div>
 </template>
 
 <script>
   import firebase from 'firebase'
+  import ImageSlide from '../components/ImageSlide'
 
   export default {
     name: 'Room',
@@ -134,8 +145,12 @@
           path: '',
           query: ''
         },
-        company: {}
+        company: {},
+        openSlide: false
       }
+    },
+    components: {
+      ImageSlide
     },
     methods: {
       convTenThousand (price) { // 1万円で割り、小数点以下1桁を表記
@@ -174,7 +189,11 @@
 
           // 画像リンクの取得
           ref.getDownloadURL().then((url) => {
+            console.log('url :')
+            console.log(url)
             this.images.push(url)
+
+            console.log(this.images)
 
             // 画像を読み込んだらページを表示
             this.pageEnable = true
@@ -378,5 +397,16 @@
     td{
       text-align: right;
     }
+  }
+
+  #imageSlide{
+    position: fixed;
+    z-index: 300;
+    top: 0;
+    left: 0;
+    display: block;
+    width: 100%;
+    height: 100vh;
+    background: rgba(0,0,0,.7);
   }
 </style>
