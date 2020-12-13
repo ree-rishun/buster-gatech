@@ -142,6 +142,9 @@
       </tr>
     </table>
 
+    <FormButton
+      v-if="pageHeight - 20 >= scrollY"/>
+
     <div
       v-if="openSlide"
       id="imageSlide">
@@ -161,6 +164,7 @@
   import firebase from 'firebase'
   import ImageSlide from '../components/ImageSlide'
   import Tips from '../components/Tips'
+  import FormButton from "../components/FormButton";
 
   export default {
     name: 'Room',
@@ -181,10 +185,13 @@
         tips: {
           id: '',
           open: false
-        }
+        },
+        scrollY: 0,
+        pageHeight: 0
       }
     },
     components: {
+      FormButton,
       ImageSlide,
       Tips
     },
@@ -243,6 +250,12 @@
       openTips (tipsID) {
         this.tips.id = tipsID
         this.tips.open = true
+      },
+      handleScroll() {
+        // 現在のスクロール量を取得
+        this.scrollY = window.scrollY
+        // ページの高さを取得
+        this.pageHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight
       }
     },
     mounted () {
@@ -270,6 +283,12 @@
       // クエリから前ページを取得
       this.prev.path = this.$route.query.prevPath
       this.prev.query = this.$route.query.prevQuery
+
+      // スクロールを監視
+      window.addEventListener('scroll', this.handleScroll)
+    },
+    beforeDestroy () {
+      window.removeEventListener('scroll', this.handleScroll)
     }
   }
 </script>

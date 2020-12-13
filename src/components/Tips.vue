@@ -50,6 +50,7 @@
 <style scoped lang="scss">
   #tips{
     position: fixed;
+    z-index: 150;
     top: 0;
     left: 0;
     width: 100%;
