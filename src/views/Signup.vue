@@ -149,7 +149,13 @@
                 console.log(user)
 
                 // ホームへ移動
-                this.$router.push('/');
+                // 遷移
+                this.$router.push(
+                  { path: '/',
+                    query: {
+                      toastMessage: '登録完了しました'
+                    }
+                  })
               })
               .catch((error) => {
                 const errorCode = error.code

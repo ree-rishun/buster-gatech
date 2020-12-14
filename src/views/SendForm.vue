@@ -66,7 +66,12 @@
           .push(this.request)
 
         // 遷移
-        this.$router.push('/')
+        this.$router.push(
+          { path: '/',
+            query: {
+              toastMessage: '送信完了しました'
+            }
+        })
       }
     },
     mounted () {

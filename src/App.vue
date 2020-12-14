@@ -78,9 +78,7 @@ export default {
     // 画面上部のUI表示の無効化
     this.disableTop = (this.$route.name === 'roomPage')
 
-    console.log(this.$route)
-
-      // ログイン状態確認
+    // ログイン状態確認
     firebase.auth().onAuthStateChanged((user) => {
       if (user) {
         const uid = user.uid

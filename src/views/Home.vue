@@ -87,6 +87,11 @@
           v-if="!login">会員登録はこちら</router-link>
       </div>
     </div>
+
+    <Toast
+      v-if="toast.display"
+      @hidden="toast.display = false"
+      :message="toast.message"/>
   </div>
 </template>
 
@@ -95,17 +100,23 @@ import firebase from 'firebase/app'
 import 'firebase/auth'
 import 'firebase/storage'
 import 'firebase/database'
+import Toast from '../components/Toast'
 
 export default {
   name: 'Home',
   components: {
+    Toast
   },
   data () {
     return {
       areas: [],
       categories: [],
       activeList: '',
-      login: false
+      login: false,
+      toast: {
+        message: 'hello',
+        display: false
+      }
     }
   },
   methods: {
@@ -142,6 +153,13 @@ export default {
       // ログイン状態を代入
       this.login = (auth !== null)
     })
+
+    // toast
+    if (Object.keys(this.$route.query).indexOf('toastMessage') !== -1) {
+      console.log(this.$route.query)
+      this.toast.message = this.$route.query.toastMessage
+      this.toast.display = true
+    }
   }
 }
 </script>

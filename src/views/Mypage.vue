@@ -2,6 +2,7 @@
   <div>
     <h2>こんにちは、{{ user.lastName + user.firstName }} さん</h2>
 
+    <!--
     <label>
       <button
         class="list_button"
@@ -18,6 +19,7 @@
       <button
         class="list_button"><span class="list_button__setting"></span>ユーザ情報の変更</button>
     </label>
+    -->
 
     <label>
       <button
@@ -43,7 +45,13 @@
     methods: {
       logout () {
         firebase.auth().signOut()
-        this.$router.push('/')
+        // 遷移
+        this.$router.push(
+          { path: '/',
+            query: {
+              toastMessage: 'ログアウトしました'
+            }
+          })
       }
     },
     mounted () {
