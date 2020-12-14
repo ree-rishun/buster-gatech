@@ -1,20 +1,28 @@
 <template>
   <div id="result">
+    <p
+      class="return_city"
+      v-if="this.$route.query.mode === 'city'">
+      <router-link to="/">ホーム</router-link> >
+      <router-link :to="'/city/' + area.prefectures.id">{{ area.prefectures.name }}</router-link> > {{ area.city.name }}
+    </p>
     <div id="list_sumnum">
       <span
-        id="evaluation_param"
-        v-if="userID !== ''">
+        id="evaluation_param">
         <span
+          v-if="userID !== ''"
           @click="evaluationFilter('like')"
           :class="(evalutionMode === 'like' ? 'active' : '') + ' evaluation_param__like'">
           {{ rooms.like.length }}
         </span>
         <span
+          v-if="userID !== ''"
           @click="evaluationFilter('nope')"
           :class="(evalutionMode === 'nope' ? 'active' : '') + ' evaluation_param__nope'">
           {{ rooms.nope.length }}
         </span>
         <span
+          v-if="userID !== ''"
           @click="evaluationFilter('new')"
           :class="(evalutionMode === 'new' ? 'active' : '') + ' evaluation_param__new'">
           {{ rooms.new.length }}
@@ -139,7 +147,11 @@
           list: {}
         },
         userID: '',
-        evalutionMode: 'new'
+        evalutionMode: 'new',
+        area: {
+          prefectures: {},
+          city: {}
+        }
       }
     },
     methods: {
@@ -378,7 +390,9 @@
             }
           })
       } else if (queryData.mode === 'city') {
-        firebase.database().ref('/rooms')
+        firebase
+          .database()
+          .ref('/rooms')
           .orderByChild('areaID')
           .startAt(queryData.prefecturesID + '-' + queryData.cityID)
           .endAt(queryData.prefecturesID + '-' + queryData.cityID)
@@ -401,6 +415,21 @@
               self.getImages()
               self.getDuplicateList()
             }
+          })
+
+        firebase
+          .database()
+          .ref('/prefectures/' + queryData.prefecturesID)
+          .on('value', snapshot => {
+            const prefectures = snapshot.val()
+            this.area.prefectures = prefectures
+          })
+        firebase
+          .database()
+          .ref('/city/' + queryData.cityID)
+          .on('value', snapshot => {
+            const city = snapshot.val()
+            this.area.city = city[queryData.cityID]
           })
       }
 
@@ -457,6 +486,13 @@
     margin: 10px 0 0;
     overflow-x: scroll;
     overflow-y: hidden;
+  }
+
+  .return_city{
+    width: 90%;
+    margin: 0 0 0 6%;
+    line-height: 1.5rem;
+    font-size: 1rem;
   }
 
   // 検索結果数

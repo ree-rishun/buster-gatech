@@ -1,5 +1,11 @@
 <template>
   <div class="home">
+    <p
+      class="return_city">
+      <router-link to="/">ホーム</router-link> >
+      {{ prefecturesName }}
+    </p>
+
     <h2>市区町村を選択</h2>
 
     <ul id="areaList">
@@ -30,7 +36,8 @@
         areas: [],
         categories: [],
         prefecturesID: '',
-        activeList: ''
+        activeList: '',
+        prefecturesName: ''
       }
     },
     methods: {
@@ -61,6 +68,15 @@
 
       // クエリパラメータの取得
       this.prefecturesID = this.$route.params.prefecturesID
+
+      //
+      firebase
+        .database()
+        .ref('/prefectures/' + this.prefecturesID)
+        .on('value', snapshot => {
+          const prefectures = snapshot.val()
+          this.prefecturesName = prefectures.name
+        })
 
       // 地名一覧の取得
       firebase
@@ -125,5 +141,13 @@
     .active{
       background: #9f9f9f;
     }
+  }
+
+  // パンくずリスト
+  .return_city{
+    width: 90%;
+    margin: 0 0 0 5%;
+    line-height: 1rem;
+    font-size: 1rem;
   }
 </style>
