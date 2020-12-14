@@ -117,6 +117,7 @@ export default {
     user-select: none;
     color: rgba(0,0,0,0);
     vertical-align: top;
+    cursor: pointer;
   }
 
   // アイコン
@@ -135,6 +136,7 @@ export default {
     background-position: bottom center;
     background-size: auto 40px;
     vertical-align: top;
+    cursor: pointer;
   }
   #user_icon__active{
     background-image: url("assets/img/user_active.png");

@@ -49,5 +49,7 @@
     background-repeat: no-repeat;
     background-position: bottom right 4%;
     background-size: auto 45px;
+    cursor: pointer;
+    user-select: none;
   }
 </style>

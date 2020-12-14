@@ -324,6 +324,7 @@
       background-position: center;
       background-repeat: no-repeat;
       background-size: cover;
+      cursor: pointer;
     }
 
     .top_cover__photobutton{
@@ -337,6 +338,7 @@
       background-position: center;
       background-repeat: no-repeat;
       background-size: cover;
+      cursor: pointer;
     }
 
     // ページトップの賃貸概要
@@ -439,7 +441,11 @@
     background-size: auto 45px;
 
     @media screen and (min-width: 960px) {
-      padding-left: 15%;
+      width: 40%;
+      padding: 0;
+      border-radius: 50px;
+      margin-left: 30%;
+      text-align: center;
     }
   }
   .room_access{
@@ -463,6 +469,10 @@
   // パラメータテーブル
   .param_list{
     margin: 20px 0;
+
+    @media screen and (min-width: 960px) {
+      margin-left: 30%;
+    }
     th, td{
       padding-left: 20px;
       height: 40px;

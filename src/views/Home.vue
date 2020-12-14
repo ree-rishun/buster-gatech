@@ -209,8 +209,8 @@ export default {
     margin-left: 5%;
 
     @media screen and (min-width: 960px) {
-      width: 70%;
-      margin-left: 15%;
+      width: 60%;
+      margin-left: 20%;
     }
     h3{
       margin-top: 10px;
@@ -233,7 +233,7 @@ export default {
       @media screen and (min-width: 960px) {
         font-size: 1.2rem;
         line-height: 1.8rem;
-        background-size: auto 10vw;
+        background-size: auto 7vw;
       }
       .bold{
         font-size: 0.9rem;

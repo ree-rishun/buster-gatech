@@ -613,6 +613,7 @@
     background-repeat: no-repeat;
     background-position: center;
     box-shadow: 0 7px 10px 3px rgba(0,0,0,0.2);
+    cursor: pointer;
 
     // 値段の表示スタイル
     .list_price{
@@ -749,6 +750,11 @@
     background: #dddddd;
     box-shadow: 0 7px 10px 3px rgba(0,0,0,0.2);
     text-align: center;
+
+    @media screen and (min-width: 960px) {
+      width: 40vh;
+      margin: 0 20px;
+    }
 
     img{
       width: 50%;

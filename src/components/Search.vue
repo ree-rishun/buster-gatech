@@ -76,5 +76,6 @@
     background-size: $textbox-height - 15px;
     user-select: none;
     color: rgba(0, 0, 0, 0);
+    cursor: pointer;
   }
 </style>
