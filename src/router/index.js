@@ -43,6 +43,11 @@ const routes = [
     path: '/room/:id',
     name: 'roomPage',
     component: () => import('../views/Room')
+  },
+  {
+    path: '/room/:id/form',
+    name: 'sendform',
+    component: () => import('../views/SendForm')
   }
 ]
 

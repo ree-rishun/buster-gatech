@@ -147,18 +147,13 @@ export default {
 </script>
 
 <style scoped lang="scss">
-  // バナー画像
-  #bunnerArea{
-    width: 90%;
-    margin:0 5% 20px;
-    .bunnerImg{
-      width: 100%;
-      margin: 10px 0 20px;
-    }
-  }
   h2{
     margin-top: 20px;
     text-align: center;
+
+    @media screen and (min-width: 960px) {
+      font-size: 2rem;
+    }
   }
   $delay: .2s;
   #areaList{
@@ -194,9 +189,18 @@ export default {
   #content_function{
     width: 90%;
     margin-left: 5%;
+
+    @media screen and (min-width: 960px) {
+      width: 70%;
+      margin-left: 15%;
+    }
     h3{
       margin-top: 10px;
       font-size: 1rem;
+
+      @media screen and (min-width: 960px) {
+        font-size: 1.5rem;
+      }
     }
     p{
       padding-right: 30%;
@@ -207,11 +211,21 @@ export default {
       background-repeat: no-repeat;
       background-position: center right 4vw;
       background-size: 20vw auto;
+
+      @media screen and (min-width: 960px) {
+        font-size: 1.2rem;
+        line-height: 1.8rem;
+        background-size: auto 10vw;
+      }
       .bold{
         font-size: 0.9rem;
         font-weight: bold;
         background: #ffdf4a;
         padding: 0 5px;
+
+        @media screen and (min-width: 960px) {
+          font-size: 1.3rem;
+        }
       }
     }
 
@@ -232,6 +246,11 @@ export default {
       text-align: center;
       line-height: 1.2rem;
       font-size: 0.9rem;
+
+      @media screen and (min-width: 960px) {
+        line-height: 1.5rem;
+        font-size: 1rem;
+      }
     }
     .content_user__function{
       display: inline-block;
@@ -240,6 +259,11 @@ export default {
       vertical-align: top;
       margin-top: 20px;
       margin-left: 20%;
+
+      @media screen and (min-width: 960px) {
+        width: 40%;
+        margin-left: 30%;
+      }
 
       .function_image{
         display: block;
@@ -260,15 +284,27 @@ export default {
         font-size: 1rem;
         line-height: 1rem;
         text-align: left;
+
+        @media screen and (min-width: 960px) {
+          line-height: 2rem;
+          font-size: 1.4rem;
+        }
       }
       p{
         font-size: 0.8rem;
         text-align: left;
+
+        @media screen and (min-width: 960px) {
+          font-size: 1rem;
+        }
       }
       .function_number{
         font-size: 0.7rem;
         color: #888888;
         margin: 0;
+        @media screen and (min-width: 960px) {
+          font-size: .9rem;
+        }
       }
     }
     .content_user__link{

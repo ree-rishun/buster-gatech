@@ -143,7 +143,8 @@
     </table>
 
     <FormButton
-      v-if="pageHeight - 20 >= scrollY"/>
+      v-if="pageHeight - 20 >= scrollY"
+      :roomID="roomID"/>
 
     <div
       v-if="openSlide"
@@ -286,8 +287,10 @@
 
       // スクロールを監視
       window.addEventListener('scroll', this.handleScroll)
+      this.pageHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight
     },
     beforeDestroy () {
+      // スクロール監視の終了
       window.removeEventListener('scroll', this.handleScroll)
     }
   }
@@ -304,6 +307,11 @@
     border-radius: 0 0 20px 20px;
     margin-bottom: 25vw;
     box-shadow: 0 60px 60px 10px rgba(0,0,0,0.4) inset;
+
+    @media screen and (min-width: 960px) {
+      height: 60vh;
+      margin-bottom: 20vh;
+    }
 
     .top_cover__prevbutton{
       position: absolute;
@@ -343,6 +351,12 @@
       text-align: center;
       background: #ffffff;
       box-shadow: 0 7px 10px 3px rgba(0,0,0,0.2);
+
+      @media screen and (min-width: 960px) {
+        top: 45vh;
+        width: 450px;
+        left: calc((100% - 450px) / 2);
+      }
 
       h2{
         width: 90%;
@@ -423,6 +437,10 @@
     background-repeat: no-repeat;
     background-position: bottom left 10%;
     background-size: auto 45px;
+
+    @media screen and (min-width: 960px) {
+      padding-left: 15%;
+    }
   }
   .room_access{
     background-color: #353535;

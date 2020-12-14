@@ -295,11 +295,6 @@
           this.user.rooms.nope.push(roomID)
         }
 
-        console.log('this.rooms.like')
-        console.log(this.rooms.like)
-        console.log('this.rooms.nope')
-        console.log(this.rooms.nope)
-
         // 現状の評価値を取得して更新
         firebase
           .database()
@@ -308,19 +303,11 @@
           // 値を格納
           let userObj = snapshot.val()
 
-          console.log('this.rooms.like')
-          console.log(this.rooms.like)
-          console.log('this.rooms.nope')
-          console.log(this.rooms.nope)
-
           // 値の更新
           userObj.evalution = {
             like: this.user.rooms.like,
             nope: this.user.rooms.nope
           }
-
-          console.log('userObj :')
-          console.log(userObj)
 
           // 更新後の配列をDBへ格納
           firebase
@@ -570,6 +557,11 @@
     width: 70vw;
     height: 50vh;
     margin: 0 5vw;
+
+    @media screen and (min-width: 960px) {
+      width: 40vh;
+      margin: 0 20px;
+    }
   }
 
   // 詳細カード

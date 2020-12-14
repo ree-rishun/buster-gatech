@@ -91,6 +91,11 @@
     img{
       width: 100vw;
       height: auto;
+
+      @media screen and (min-width: 960px) {
+        width: auto;
+        height: 70vh;
+      }
     }
 
     // 前後の画像移動ボタン

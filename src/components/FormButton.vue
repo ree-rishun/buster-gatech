@@ -1,6 +1,8 @@
 <template>
   <div id="form_button">
-    <div id="form_button_button">
+    <div
+      id="form_button_button"
+      @click="redirectForm">
       内見・入居のご相談
     </div>
   </div>
@@ -8,7 +10,15 @@
 
 <script>
   export default {
-    name: "formButton"
+    name: 'formButton',
+    props: {
+      roomID: null
+    },
+    methods: {
+      redirectForm () {
+        this.$router.push('/room/' + this.roomID + '/form')
+      }
+    }
   }
 </script>
 

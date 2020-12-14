@@ -156,6 +156,10 @@ export default {
   .footer_design{
     width: 60%;
     margin: 10px 20% 0;
+    @media screen and (min-width: 960px) {
+      width: 20%;
+      margin: 10px 40% 0;
+    }
   }
 
   // フッタースタイル
