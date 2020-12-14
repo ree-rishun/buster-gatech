@@ -16,7 +16,7 @@
         v-if="!request.user.check">
         <p>連絡用メールアドレス</p>
         <input
-          type="text"
+          type="email"
           v-model="request.email"
           placeholder="example@example">
       </label>
